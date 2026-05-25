@@ -5,6 +5,16 @@ hahahahaha
 
 ---
 
+## 🏆 Team Progress Log
+- **[2026-05-25] Zmmwei (張茗崴) - Step 1 Completed!**
+  - Designed the PostgreSQL relational schema in `databases/relational/schema.sql` (including Loyalty Points feature).
+  - Fixed `missing-import` linting errors for Python dependencies.
+  - Successfully verified the Docker environment (`docker compose up -d`).
+  - Merged `feature/zmmwei/relational-schema` into `main`.
+  - Next step: Handed off to 施紘宇 for data seeding.
+
+---
+
 ## Table of Contents
 
 1. [What Is This Project?](#what-is-this-project) — overview of TransitFlow and what you will build
