@@ -167,5 +167,8 @@ def query_station_connections(station_id: str) -> list[dict]: ...
 [x] Graph schema: Unified Station label with is_closed property for alternative routing simulations. Added specific link types (METRO_LINK, RAIL_LINK).
 
 - **Prompts That Worked**
+
+- **張茗崴實作：**
+
 Relational Query Implementation (PostgreSQL):
 - **execute_booking 成功提示詞**: 當實作寫入邏輯時，請使用 psycopg2 手動建立連線 (conn = psycopg2.connect(PG_DSN))，避免使用具有 autocommit 的 _connect()。務必包裝在 try...except 中，執行多個 cur.execute 後再呼叫 conn.commit()。如果發生例外請呼叫 conn.rollback()。針對常客點數，請使用 UPDATE users SET loyalty_points = loyalty_points + %s WHERE user_id = %s。
