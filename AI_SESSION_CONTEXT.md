@@ -13,7 +13,9 @@ TransitFlow is a Python-based AI chat assistant for a fictional transit operator
 
 ## 團隊分工與專題亮點
 - **張茗崴**：負責 PostgreSQL 關聯資料庫 Schema 設計與查詢邏輯 (`relational/queries.py`)。負責實作【亮點 A：常客點數 Loyalty Points】的資料庫狀態更新。
+
 - **吳絃紘**：負責 Neo4j 圖形路網拓樸設計與 Cypher 查詢邏輯 (`graph/queries.py`)。負責跨網轉乘與路徑規劃。
+
 - **施紘宇**：負責資料匯入腳本 (`seed_postgres.py`, `seed_neo4j.py`)。負責實作【亮點 C：隱藏版政策查詢】，擴充 JSON 知識庫與 pgvector 整合。
 
 ## Tech Stack
