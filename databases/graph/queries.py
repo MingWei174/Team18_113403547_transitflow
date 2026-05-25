@@ -24,7 +24,7 @@ from __future__ import annotations
 
 from typing import Optional
 
-from neo4j import GraphDatabase
+from neo4j import GraphDatabase  # pyrefly: ignore [missing-import]
 
 from skeleton.config import NEO4J_URI, NEO4J_USER, NEO4J_PASSWORD
 

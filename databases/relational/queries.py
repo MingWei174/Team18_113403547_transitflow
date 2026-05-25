@@ -28,8 +28,8 @@ import string
 from datetime import datetime, timezone
 from typing import Optional
 
-import psycopg2
-import psycopg2.extras
+import psycopg2  # pyrefly: ignore [missing-import]
+import psycopg2  # pyrefly: ignore [missing-import].extras
 
 from skeleton.config import PG_DSN, VECTOR_TOP_K, VECTOR_SIMILARITY_THRESHOLD
 
@@ -231,7 +231,45 @@ def execute_booking(
         (True, booking_dict)   on success
         (False, error_message) on failure
     """
-    raise NotImplementedError("TODO: implement after designing your schema")
+    booking_id = _gen_booking_id()
+    
+    conn = psycopg2.connect(PG_DSN)
+    try:
+        with conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor) as cur:
+            cur.execute("SELECT base_fare_usd FROM national_rail_schedules WHERE schedule_id = %s", (schedule_id,))
+            schedule = cur.fetchone()
+            if not schedule:
+                return False, "Schedule not found."
+            
+            amount_usd = schedule["base_fare_usd"] or 50.00
+            if fare_class == "first":
+                amount_usd *= 2
+                
+            cur.execute("""
+                INSERT INTO national_rail_bookings 
+                (booking_id, user_id, schedule_id, origin_station_id, destination_station_id, travel_date, fare_class, amount_usd, status)
+                VALUES (%s, %s, %s, %s, %s, %s, %s, %s, 'confirmed')
+            """, (booking_id, user_id, schedule_id, origin_station_id, destination_station_id, travel_date, fare_class, amount_usd))
+            
+            points_earned = int(amount_usd)
+            cur.execute("""
+                UPDATE users 
+                SET loyalty_points = loyalty_points + %s 
+                WHERE user_id = %s
+            """, (points_earned, user_id))
+            
+        conn.commit()
+        return True, {
+            "booking_id": booking_id,
+            "status": "confirmed",
+            "amount_usd": float(amount_usd),
+            "loyalty_points_earned": points_earned
+        }
+    except Exception as e:
+        conn.rollback()
+        return False, f"Booking failed: {str(e)}"
+    finally:
+        conn.close()
 
 
 def execute_cancellation(booking_id: str, user_id: str) -> tuple[bool, dict | str]:
