@@ -12,9 +12,9 @@ Before implementing query functions, the team must agree on the database schema 
 
 ## Current Decisions
 
-* Relational schema owner: 施竑宇
-* Graph schema owner: 同學 B
-* Vector / RAG and integration testing owner: 同學 C
+* Relational schema owner: 張茗崴
+* Graph schema owner: 吳絃紘
+* Vector / RAG and integration testing owner: 施竑宇
 * LLM provider for local testing: Ollama
 * Vector dimension for Ollama: `vector(768)`
 
