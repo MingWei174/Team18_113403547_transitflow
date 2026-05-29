@@ -168,13 +168,20 @@ def query_station_connections(station_id: str) -> list[dict]: ...
 
 [x] Added vector policy embedding support: updated `train-mock-data` JSON policy documents, fixed `skeleton/seed_vectors.py` to read BOM-safe JSON, and successfully seeded the policy documents into PostgreSQL.
 
-- **Prompts That Worked**
+## AI Session Update - 張茗崴 PostgreSQL Implementation
 
-- **張茗崴實作：**
+Branch: `main`
 
-Relational Query Implementation (PostgreSQL):
+Completed:
+- 實作 PostgreSQL 關聯資料庫查詢邏輯 (`databases/relational/queries.py`)。
+- 實作 `execute_booking` 寫入邏輯，使用 `psycopg2` 手動建立連線 (`conn = psycopg2.connect(PG_DSN)`)，避免使用具備 autocommit 的 `_connect()`。
+- 將多筆寫入操作包裝於 `try...except` 區塊中，執行多個 `cur.execute` 後呼叫 `conn.commit()` 確保交易完整性。
+- 實作例外處理機制，若發生例外則呼叫 `conn.rollback()`。
+- 實作常客點數更新邏輯，使用語法：`UPDATE users SET loyalty_points = loyalty_points + %s WHERE user_id = %s`。
 
-- **execute_booking 成功提示詞**: 當實作寫入邏輯時，請使用 psycopg2 手動建立連線 (conn = psycopg2.connect(PG_DSN))，避免使用具有 autocommit 的 _connect()。務必包裝在 try...except 中，執行多個 cur.execute 後再呼叫 conn.commit()。如果發生例外請呼叫 conn.rollback()。針對常客點數，請使用 UPDATE users SET loyalty_points = loyalty_points + %s WHERE user_id = %s。
+Validation:
+- 驗證交易管理功能，包含資料成功寫入時的提交 (commit) 與發生錯誤時的回滾 (rollback) 機制。
+- 確認常客點數功能可於資料庫中正確更新。
 
 ---
 
