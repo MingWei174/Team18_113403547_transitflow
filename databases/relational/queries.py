@@ -29,7 +29,7 @@ from datetime import datetime, timezone
 from typing import Optional
 
 import psycopg2  # pyrefly: ignore [missing-import]
-import psycopg2  # pyrefly: ignore [missing-import].extras
+import psycopg2.extras  # pyrefly: ignore [missing-import].extras
 
 from skeleton.config import PG_DSN, VECTOR_TOP_K, VECTOR_SIMILARITY_THRESHOLD
 

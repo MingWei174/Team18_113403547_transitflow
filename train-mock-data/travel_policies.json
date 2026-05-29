@@ -1,6 +1,6 @@
-{
-  "version": "1.0",
-  "last_updated": "2024-01-01",
+﻿{
+  "version": "1.1",
+  "last_updated": "2026-05-29",
   "metro": {
     "bicycles": {
       "foldable_bicycles": {
@@ -56,7 +56,11 @@
       "Items emitting strong odours that may cause discomfort to other passengers"
     ],
     "smoking_and_vaping": "Strictly prohibited on all metro carriages, platforms, and station concourses.",
-    "noise": "Passengers are asked to keep noise to a considerate level. Use of personal audio devices with external speakers is not permitted."
+    "noise": "Passengers are asked to keep noise to a considerate level. Use of personal audio devices with external speakers is not permitted.",
+    "accessibility": {
+      "step_free_access": "All metro stations have step-free access to platforms.",
+      "priority_boarding": "Passengers requiring assistance may board first. Please notify station staff upon arrival."
+    }
   },
   "national_rail": {
     "bicycles": {

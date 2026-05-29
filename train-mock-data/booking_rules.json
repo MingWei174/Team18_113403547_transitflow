@@ -1,11 +1,11 @@
-{
-  "version": "1.0",
-  "last_updated": "2024-01-01",
+﻿{
+  "version": "1.1",
+  "last_updated": "2026-05-29",
   "national_rail": {
     "advance_booking": {
       "max_days_in_advance": 90,
       "min_advance": "Tickets may be booked up to 10 minutes before scheduled departure, subject to seat availability.",
-      "recommended": "Booking early is recommended for express services and first class, as capacity is limited."
+      "recommended": "Booking early is recommended for express services, first class, and peak travel days."
     },
     "seat_selection": {
       "first_class": {
@@ -53,12 +53,18 @@
     "payment": {
       "accepted_methods": ["credit_card", "debit_card", "ewallet"],
       "payment_timing": "Full payment is required at the time of booking.",
-      "currency": "USD"
+      "currency": "USD",
+      "refund_processing_time": "Refunds typically appear within 7 business days."
     },
     "booking_confirmation": {
       "method": "Email and in-app notification sent immediately after booking.",
       "ticket_format": "Digital ticket (QR code) displayed in the app or printable PDF. No physical ticket is required.",
-      "check_in": "Present QR code to platform staff or scanner at the gate before boarding."
+      "check_in": "Present QR code to platform staff or scanner at the gate before boarding.",
+      "change_confirmation": "A confirmation email is sent after any successful booking change."
+    },
+    "special_conditions": {
+      "service_cancellations": "If a scheduled service is cancelled by the operator, passengers may choose a full refund or an alternative service at no extra charge.",
+      "fare_adjustments": "If a lower fare becomes available after booking, passengers may request a fare adjustment within 24 hours."
     }
   },
   "metro": {
@@ -102,6 +108,10 @@
       "method": "In-app confirmation sent immediately after purchase.",
       "ticket_format": "Digital ticket with QR code displayed in the app.",
       "check_in": "Tap QR code at the station gate scanner to begin journey."
+    },
+    "other_rules": {
+      "peak_hour_reminder": "The metro is busiest during 07:00–09:30 and 17:00–20:00 on weekdays. Plan your travel accordingly.",
+      "refund_note": "Refunds for day passes are only available before first tap-in; tickets used after first tap-in are non-refundable unless the entire service is cancelled by the operator."
     }
   },
   "general_rules": {

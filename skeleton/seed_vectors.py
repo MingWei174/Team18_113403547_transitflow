@@ -30,7 +30,7 @@ _DATA_DIR = os.path.normpath(
 
 
 def _load(filename):
-    with open(os.path.join(_DATA_DIR, filename), encoding="utf-8") as f:
+    with open(os.path.join(_DATA_DIR, filename), encoding="utf-8-sig") as f:
         return json.load(f)
 
 
