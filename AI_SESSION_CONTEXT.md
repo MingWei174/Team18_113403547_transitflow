@@ -173,15 +173,19 @@ def query_station_connections(station_id: str) -> list[dict]: ...
 Branch: `main`
 
 Completed:
-- 實作 PostgreSQL 關聯資料庫查詢邏輯 (`databases/relational/queries.py`)。
+- 實作 PostgreSQL 關聯資料庫查詢邏輯 (`databases/relational/queries.py`)，包含所有剩餘的讀取查詢（如 `query_national_rail_availability`、`query_available_seats`、車資計算與使用者紀錄）。
+- 在 `databases/relational/schema.sql` 中新增 `national_rail_seat_layouts`、`metro_travel_history`、`payments` 資料表，並為 `national_rail_bookings` 補齊 `seat_id` 與 `ticket_type`。
 - 實作 `execute_booking` 寫入邏輯，使用 `psycopg2` 手動建立連線 (`conn = psycopg2.connect(PG_DSN)`)，避免使用具備 autocommit 的 `_connect()`。
-- 將多筆寫入操作包裝於 `try...except` 區塊中，執行多個 `cur.execute` 後呼叫 `conn.commit()` 確保交易完整性。
-- 實作例外處理機制，若發生例外則呼叫 `conn.rollback()`。
+- 將多筆寫入操作包裝於 `try...except` 區塊中，執行多個 `cur.execute` 後呼叫 `conn.commit()` 確保交易完整性，發生例外則呼叫 `conn.rollback()`。
+- 實作 `execute_cancellation` 取消訂單邏輯，使用 `FOR UPDATE` 鎖避免併發問題，並根據規則更新訂單狀態與退費。
 - 實作常客點數更新邏輯，使用語法：`UPDATE users SET loyalty_points = loyalty_points + %s WHERE user_id = %s`。
+- 實作 Auth 身分驗證系統 (`register_user`, `login_user` 等)，採用 `hashlib.sha256` 搭配隨機 salt 進行密碼與安全問答的安全雜湊儲存。
+- 成功將 `feature/zmmwei/relational-schema` 的變更合併至 `main` 分支並推送到遠端儲存庫。
 
 Validation:
 - 驗證交易管理功能，包含資料成功寫入時的提交 (commit) 與發生錯誤時的回滾 (rollback) 機制。
 - 確認常客點數功能可於資料庫中正確更新。
+- 確認關聯式資料庫 Schema 與所有查詢功能皆已無 `NotImplementedError`。
 
 ---
 
