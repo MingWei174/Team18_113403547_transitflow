@@ -176,3 +176,20 @@ Relational Query Implementation (PostgreSQL):
 - **execute_booking 成功提示詞**: 當實作寫入邏輯時，請使用 psycopg2 手動建立連線 (conn = psycopg2.connect(PG_DSN))，避免使用具有 autocommit 的 _connect()。務必包裝在 try...except 中，執行多個 cur.execute 後再呼叫 conn.commit()。如果發生例外請呼叫 conn.rollback()。針對常客點數，請使用 UPDATE users SET loyalty_points = loyalty_points + %s WHERE user_id = %s。
 
 已更新 4 個政策 JSON 檔案，並修正 seed_vectors.py 讓它能正確讀取含 BOM 的 UTF-8 JSON。
+
+## AI Session Update - 施紘宇 Vector Policy Work
+
+Branch: main
+
+Completed:
+
+- 更新 4 個政策 JSON 檔案（`train-mock-data/booking_rules.json`、`train-mock-data/refund_policy.json`、`train-mock-data/ticket_types.json`、`train-mock-data/travel_policies.json`）。
+- 修正 `skeleton/seed_vectors.py` 的讀檔編碼為 `utf-8-sig`，使其可正確讀取含 BOM 的 UTF-8 JSON。
+- 執行 `python skeleton/seed_vectors.py`，將政策文件嵌入並存入 PostgreSQL（共 15 筆文件）。
+- 將變更 commit 到 `feature/施紘宇/seed-policy`，推到遠端，並將該分支合併到 `main`。
+- 解決 `AI_SESSION_CONTEXT.md` 合併衝突並將本次工作摘要加入合約文件底部。
+
+Validation:
+
+- 執行結果顯示 15 筆政策文件成功嵌入並回報儲存時的 document id。
+- 已 push 並合併至 `main`，確認遠端 `main` 上的 `AI_SESSION_CONTEXT.md` 包含合併後的內容。
