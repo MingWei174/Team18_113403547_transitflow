@@ -166,6 +166,8 @@ def query_station_connections(station_id: str) -> list[dict]: ...
 
 [x] Graph schema: Unified Station label with is_closed property for alternative routing simulations. Added specific link types (METRO_LINK, RAIL_LINK).
 
+[x] Added vector policy embedding support: updated `train-mock-data` JSON policy documents, fixed `skeleton/seed_vectors.py` to read BOM-safe JSON, and successfully seeded the policy documents into PostgreSQL.
+
 - **Prompts That Worked**
 
 - **張茗崴實作：**

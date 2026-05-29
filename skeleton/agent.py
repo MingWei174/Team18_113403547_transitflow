@@ -228,7 +228,7 @@ TOOLS = [
         "name": "search_policy",
         "description": (
             "Search company policy documents. Use for any question about: "
-            "refunds, delay compensation, luggage, bicycles, pets, food and drink, "
+            "refunds, delay compensation, RF005, luggage, bicycles, pets, food and drink, "
             "conduct, booking rules, ticket types, fare evasion, or child fares."
         ),
         "parameters": {
