@@ -1,4 +1,4 @@
-﻿-- ============================================================
+-- ============================================================
 --  TransitFlow PostgreSQL Schema
 --  Seed data is loaded separately by: python skeleton/seed_postgres.py
 --
@@ -99,8 +99,38 @@ CREATE TABLE national_rail_bookings (
     destination_station_id VARCHAR(10) REFERENCES national_rail_stations(station_id),
     travel_date            DATE NOT NULL,
     fare_class             VARCHAR(20) NOT NULL,
+    ticket_type            VARCHAR(20) NOT NULL DEFAULT 'single',
+    seat_id                VARCHAR(10),
     amount_usd             NUMERIC(5,2) NOT NULL,
     status                 VARCHAR(20) DEFAULT 'confirmed'
+);
+
+CREATE TABLE national_rail_seat_layouts (
+    layout_id   VARCHAR(20) PRIMARY KEY,
+    schedule_id VARCHAR(20) REFERENCES national_rail_schedules(schedule_id),
+    coaches     JSONB NOT NULL
+);
+
+CREATE TABLE metro_travel_history (
+    trip_id                VARCHAR(20) PRIMARY KEY,
+    user_id                VARCHAR(20) REFERENCES users(user_id),
+    schedule_id            VARCHAR(20) REFERENCES metro_schedules(schedule_id),
+    origin_station_id      VARCHAR(10) REFERENCES metro_stations(station_id),
+    destination_station_id VARCHAR(10) REFERENCES metro_stations(station_id),
+    travel_date            DATE NOT NULL,
+    ticket_type            VARCHAR(20),
+    stops_travelled        INT,
+    amount_usd             NUMERIC(5,2),
+    status                 VARCHAR(20) DEFAULT 'completed'
+);
+
+CREATE TABLE payments (
+    payment_id  VARCHAR(20) PRIMARY KEY,
+    booking_id  VARCHAR(20) NOT NULL,
+    amount_usd  NUMERIC(5,2) NOT NULL,
+    method      VARCHAR(20),
+    status      VARCHAR(20),
+    paid_at     TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
 -- ============================================================
