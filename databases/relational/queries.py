@@ -86,8 +86,8 @@ def query_national_rail_availability(
             
             results = []
             for row in all_schedules:
-                stops = row["stops"]
-                station_ids = [stop.get("station_id", stop) if isinstance(stop, dict) else stop for stop in stops]
+                sch = row["stops"]
+                station_ids = sch.get("stops_in_order", [])
                 
                 if origin_id in station_ids and destination_id in station_ids:
                     orig_idx = station_ids.index(origin_id)
@@ -162,8 +162,8 @@ def query_metro_schedules(origin_id: str, destination_id: str) -> list[dict]:
             
             results = []
             for row in all_schedules:
-                stops = row["stops"]
-                station_ids = [stop.get("station_id", stop) if isinstance(stop, dict) else stop for stop in stops]
+                sch = row["stops"]
+                station_ids = sch.get("stops_in_order", [])
                 
                 if origin_id in station_ids and destination_id in station_ids:
                     orig_idx = station_ids.index(origin_id)
