@@ -417,7 +417,7 @@ def execute_cancellation(booking_id: str, user_id: str) -> tuple[bool, dict | st
 # ── AUTHENTICATION QUERIES ────────────────────────────────────────────────────
 
 def _hash_password(password: str, salt: str) -> str:
-    return hashlib.sha256((password + salt).encode('utf-8')).hexdigest()
+    return hashlib.sha256((salt + password).encode('utf-8')).hexdigest()
 
 
 def register_user(
