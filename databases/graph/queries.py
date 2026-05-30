@@ -386,12 +386,11 @@ def query_delay_ripple(delayed_station_id: str, hops: int = 2) -> list[dict]:
     Returns:
         List of dicts: {station_id, name, hops_away, lines_affected}
     """
-    max_hops = max(1, min(int(hops), 6))
+    max_hops = max(0, min(int(hops), 6))
     query = f"""
         MATCH (delayed:Station {{station_id: $delayed_station_id}})
-        MATCH path = (delayed)-[rels:METRO_LINK|RAIL_LINK|INTERCHANGE_TO*1..{max_hops}]-(station:Station)
-        WHERE station.station_id <> $delayed_station_id
-          AND coalesce(station.is_closed, false) = false
+        MATCH path = (delayed)-[rels:METRO_LINK|RAIL_LINK|INTERCHANGE_TO*0..{max_hops}]-(station:Station)
+        WHERE coalesce(station.is_closed, false) = false
         RETURN station AS station,
                min(length(path)) AS hops_away,
                collect([rel IN rels WHERE rel.line IS NOT NULL | rel.line]) AS line_groups

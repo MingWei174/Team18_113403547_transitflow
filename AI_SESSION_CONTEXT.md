@@ -184,6 +184,7 @@ Completed:
 - **[Bug Fix] 完善訂票邏輯 (`execute_booking`)**：加入座位檢查與 `"any"` 自動選位功能，並根據排程的 `stops_in_order` 動態計算跨站票價 (`stops_travelled`)，最後補上寫入 `payments` 資料表的付款紀錄。
 - **[Bug Fix] 完善退票邏輯 (`execute_cancellation`)**：實裝 Refund Policy (RF001 / RF002) 規則，利用 `service_type` 與計算距離出發日的天數來動態決定退款比例 (100%, 75%, 50%, 0%)，取代靜態的 75%。
 - **[Bug Fix] Schema 修正**：將 `feedback` 資料表的建表邏輯整合進正式的 `databases/relational/schema.sql`，並移除 `skeleton/seed_postgres.py` 中臨時的建表語法。
+- **[Bug Fix] Neo4j Graph Queries 防呆 (`databases/graph/queries.py`)**：修正了 `query_delay_ripple` 在 `hops=0` 時的邊界條件邏輯（應對 Live Testing C5 情境），修改下限確保能正確且僅回傳發生延誤的車站本身。
 
 Validation:
 - 驗證交易管理功能，包含資料成功寫入時的提交 (commit) 與發生錯誤時的回滾 (rollback) 機制。
