@@ -78,6 +78,11 @@ try:
     cur.close()
     conn.close()
     
+    # Now seed the data
+    print('\n🌱 Seeding data...')
+    from skeleton import seed_postgres
+    seed_postgres.main()
+    
 except Exception as e:
     import traceback
     print(f'✗ Error: {e}')
