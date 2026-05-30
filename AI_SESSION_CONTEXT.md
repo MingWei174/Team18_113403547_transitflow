@@ -212,7 +212,38 @@ Validation:
 - Ran smoke tests for shortest route, cheapest route, interchange routing, alternative routes, delay ripple, station connections, and not-found station cases.
 - Confirmed the Neo4j portion has no remaining `TODO` or `NotImplementedError`.
 
-Relational Query Implementation (PostgreSQL):
-- **execute_booking 成功提示詞**: 當實作寫入邏輯時，請使用 psycopg2 手動建立連線 (conn = psycopg2.connect(PG_DSN))，避免使用具有 autocommit 的 _connect()。務必包裝在 try...except 中，執行多個 cur.execute 後再呼叫 conn.commit()。如果發生例外請呼叫 conn.rollback()。針對常客點數，請使用 UPDATE users SET loyalty_points = loyalty_points + %s WHERE user_id = %s。
+## AI Session Update - 施竑宇（你的工作）
 
-已更新 4 個政策 JSON 檔案，並修正 seed_vectors.py 讓它能正確讀取含 BOM 的 UTF-8 JSON。
+Branch: `main` / `feature/施竑宇/seed-policy`
+
+Completed:
+- 新增 `TEAM.md`，建立團隊分工資訊
+- 紀錄 vector policy 種子資料
+- 完成 vector policy 與 RAG 種子資料相關工作
+  - `skeleton/seed_vectors.py`
+  - `train-mock-data/booking_rules.json`
+  - `train-mock-data/refund_policy.json`
+  - `train-mock-data/ticket_types.json`
+  - `train-mock-data/travel_policies.json`
+- 修改/補強專案工具與資料庫相關檔案
+  - `databases/relational/queries.py`
+  - `skeleton/agent.py`
+  - `skeleton/seed_postgres.py`
+- 保存當前本地進度
+  - `skeleton/ensure_schema_snippet.py`
+- 推到 `main` 的變更
+  - `check_tables.py`
+  - `init_schema.py`
+  - `reset_db.py`
+  - `skeleton/seed_postgres.py`
+
+Validation:
+- 已執行 `python skeleton/seed_postgres.py`
+- 已成功推送到遠端 `origin/main`
+- 目前遠端 `main` 上包含你的提交：
+  - `cc58fe4`：Merge current local changes into main
+  - `eae41dd`：Save current ensure_schema_snippet.py
+  - `32cc851`：resolve merge conflict / vector policy note
+  - `c589b19`：record vector policy seeding
+  - `e55f346`：seed vector policy docs
+
