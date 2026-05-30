@@ -170,7 +170,7 @@ def query_station_connections(station_id: str) -> list[dict]: ...
 
 ## AI Session Update - 張茗崴 PostgreSQL Implementation
 
-Branch: `main`
+Branch: `main` / `feature/zmmwei/relational-schema`
 
 Completed:
 - 實作 PostgreSQL 關聯資料庫查詢邏輯 (`databases/relational/queries.py`)，包含所有剩餘的讀取查詢（如 `query_national_rail_availability`、`query_available_seats`、車資計算與使用者紀錄）。
