@@ -155,7 +155,6 @@ def ensure_schema(cur):
 
 def seed_metro_stations(cur):
     data = load("metro_stations.json")
-    # TODO: Design your table schema, then implement the INSERT logic here.
     # Each item in `data` is a dict — inspect the JSON to see available fields.
     rows = []
     for s in data:
@@ -169,7 +168,6 @@ def seed_metro_stations(cur):
 
 def seed_national_rail_stations(cur):
     data = load("national_rail_stations.json")
-    # TODO: Design your table schema, then implement the INSERT logic here.
     rows = []
     for s in data:
         rows.append((s.get("station_id"), s.get("name")))
@@ -179,7 +177,6 @@ def seed_national_rail_stations(cur):
 
 def seed_metro_schedules(cur):
     data = load("metro_schedules.json")
-    # TODO: Design your table schema, then implement the INSERT logic here.
     rows = []
     for sch in data:
         schedule_id = sch.get("schedule_id")
@@ -194,7 +191,6 @@ def seed_metro_schedules(cur):
 
 def seed_national_rail_schedules(cur):
     data = load("national_rail_schedules.json")
-    # TODO: Design your table schema, then implement the INSERT logic here.
     rows = []
     for sch in data:
         schedule_id = sch.get("schedule_id")
@@ -212,7 +208,6 @@ def seed_national_rail_schedules(cur):
 
 def seed_seat_layouts(cur):
     data = load("national_rail_seat_layouts.json")
-    # TODO: Design your table schema, then implement the INSERT logic here.
     rows = []
     for layout in data:
         layout_id = layout.get("layout_id")
@@ -225,7 +220,6 @@ def seed_seat_layouts(cur):
 
 def seed_users(cur):
     data = load("registered_users.json")
-    # TODO: Design your table schema, then implement the INSERT logic here.
     users_rows = []
     passwords_rows = []
     secq_rows = []
@@ -265,7 +259,6 @@ def seed_users(cur):
 
 def seed_national_rail_bookings(cur):
     data = load("bookings.json")
-    # TODO: Design your table schema, then implement the INSERT logic here.
     rows = []
     for b in data:
         rows.append((
@@ -287,7 +280,6 @@ def seed_national_rail_bookings(cur):
 
 def seed_metro_travels(cur):
     data = load("metro_travel_history.json")
-    # TODO: Design your table schema, then implement the INSERT logic here.
     rows = []
     for t in data:
         rows.append((
@@ -308,7 +300,6 @@ def seed_metro_travels(cur):
 
 def seed_payments(cur):
     data = load("payments.json")
-    # TODO: Design your table schema, then implement the INSERT logic here.
     rows = []
     for p in data:
         rows.append((
@@ -325,7 +316,6 @@ def seed_payments(cur):
 
 def seed_feedback(cur):
     data = load("feedback.json")
-    # TODO: Design your table schema, then implement the INSERT logic here.
     # Create feedback table if students didn't add it to schema.sql
     cur.execute("""
     CREATE TABLE IF NOT EXISTS feedback (

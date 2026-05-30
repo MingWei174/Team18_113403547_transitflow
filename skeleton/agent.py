@@ -670,27 +670,30 @@ JSON:"""
                   "route query")
 
     # 2. Availability / trains / schedules between two stations
-    elif not tool_calls and _two_stations:
+    elif _two_stations:
         _avail_triggers = {"train", "trains", "service", "services", "run from", "runs from",
                            "schedule", "timetable", "available", "availability"}
         if any(kw in _lower for kw in _avail_triggers):
             o, d = _station_ids[0].upper(), _station_ids[1].upper()
-            _travel_date = next(
-                (w for w in _lower.split() if re.match(r'\d{4}-\d{2}-\d{2}', w)), None
-            )
-            _params = {"origin_id": o, "destination_id": d}
-            if _travel_date:
-                _params["travel_date"] = _travel_date
             _tool = "check_national_rail_availability" if o.startswith("NR") else "check_metro_availability"
-            _fallback(_tool, _params, "availability query")
+            # If the correct tool isn't already selected with required params, override
+            if not _tool_selected(_tool, "origin_id", "destination_id"):
+                _travel_date = next(
+                    (w for w in _lower.split() if re.match(r'\d{4}-\d{2}-\d{2}', w)), None
+                )
+                _params = {"origin_id": o, "destination_id": d}
+                if _travel_date:
+                    _params["travel_date"] = _travel_date
+                _fallback(_tool, _params, "availability query")
 
     # 3. Personal booking history — requires login
-    if current_user_email and not tool_calls:
+    if current_user_email:
         _personal_triggers = {"my booking", "my ticket", "my trip", "my journey", "my history",
                                "my reservation", "show booking", "view booking", "check booking",
                                "list booking", "show my", "view my"}
         if any(kw in _lower for kw in _personal_triggers):
-            _fallback("get_user_bookings", {}, "personal booking query")
+            if not _tool_selected("get_user_bookings"):
+                _fallback("get_user_bookings", {}, "personal booking query")
 
     # Step 2: Execute each tool call against the real databases
     tool_results = []
