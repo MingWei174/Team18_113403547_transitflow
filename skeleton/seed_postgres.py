@@ -316,17 +316,6 @@ def seed_payments(cur):
 
 def seed_feedback(cur):
     data = load("feedback.json")
-    # Create feedback table if students didn't add it to schema.sql
-    cur.execute("""
-    CREATE TABLE IF NOT EXISTS feedback (
-        feedback_id VARCHAR(20) PRIMARY KEY,
-        booking_id VARCHAR(20),
-        user_id VARCHAR(20),
-        rating INT,
-        comment TEXT,
-        submitted_at TIMESTAMP
-    )
-    """)
     rows = []
     for f in data:
         rows.append((

@@ -133,11 +133,20 @@ CREATE TABLE payments (
     paid_at     TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
+CREATE EXTENSION IF NOT EXISTS vector;
+
+CREATE TABLE feedback (
+    feedback_id VARCHAR(20) PRIMARY KEY,
+    booking_id  VARCHAR(20) REFERENCES national_rail_bookings(booking_id),
+    user_id     VARCHAR(20) REFERENCES users(user_id),
+    rating      INT,
+    comment     TEXT,
+    submitted_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
 -- ============================================================
 --  VECTOR SCHEMA  (RAG / Help Desk) ??do not modify
 -- ============================================================
-
-CREATE EXTENSION IF NOT EXISTS vector;
 
 CREATE TABLE IF NOT EXISTS policy_documents (
     id          SERIAL       PRIMARY KEY,

@@ -338,14 +338,39 @@ def execute_booking(
     
     conn = psycopg2.connect(PG_DSN)
     try:
+        # Check seats before transaction to avoid holding locks unnecessarily
+        if seat_id.lower() == "any":
+            available_seats = query_available_seats(schedule_id, travel_date, fare_class)
+            seats_to_assign = auto_select_adjacent_seats(available_seats, 1)
+            if not seats_to_assign:
+                return False, "No seats available."
+            seat_id = seats_to_assign[0]
+        else:
+            available_seats = query_available_seats(schedule_id, travel_date, fare_class)
+            if seat_id not in [s["seat_id"] for s in available_seats]:
+                return False, f"Seat {seat_id} is not available."
+                
         with conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor) as cur:
-            cur.execute("SELECT base_fare_usd FROM national_rail_schedules WHERE schedule_id = %s", (schedule_id,))
+            cur.execute("SELECT base_fare_usd, per_stop_rate_usd, stops FROM national_rail_schedules WHERE schedule_id = %s", (schedule_id,))
             schedule = cur.fetchone()
             if not schedule:
                 return False, "Schedule not found."
             
-            amount_usd = schedule["base_fare_usd"] or 50.00
-            if fare_class == "first":
+            base_fare = float(schedule["base_fare_usd"] or 50.00)
+            per_stop = float(schedule["per_stop_rate_usd"] or 10.00)
+            stops_in_order = schedule["stops"].get("stops_in_order", [])
+            
+            if origin_station_id not in stops_in_order or destination_station_id not in stops_in_order:
+                return False, "Invalid origin or destination station for this schedule."
+                
+            orig_idx = stops_in_order.index(origin_station_id)
+            dest_idx = stops_in_order.index(destination_station_id)
+            if orig_idx >= dest_idx:
+                return False, "Invalid origin and destination order."
+                
+            stops_travelled = dest_idx - orig_idx
+            amount_usd = base_fare + (stops_travelled * per_stop)
+            if fare_class.lower() == "first":
                 amount_usd *= 2
                 
             cur.execute("""
@@ -360,6 +385,12 @@ def execute_booking(
                 SET loyalty_points = loyalty_points + %s 
                 WHERE user_id = %s
             """, (points_earned, user_id))
+            
+            payment_id = _gen_payment_id()
+            cur.execute("""
+                INSERT INTO payments (payment_id, booking_id, amount_usd, method, status)
+                VALUES (%s, %s, %s, %s, 'completed')
+            """, (payment_id, booking_id, amount_usd, "credit_card"))
             
         conn.commit()
         return True, {
@@ -394,7 +425,30 @@ def execute_cancellation(booking_id: str, user_id: str) -> tuple[bool, dict | st
             if booking["status"] in ("cancelled", "refunded"):
                 return False, "Booking is already cancelled."
                 
-            refund_amount_usd = float(booking["amount_usd"]) * 0.75 # Default logic for mock
+            cur.execute("SELECT stops FROM national_rail_schedules WHERE schedule_id = %s", (booking["schedule_id"],))
+            sch_row = cur.fetchone()
+            service_type = sch_row["stops"].get("service_type", "normal") if sch_row else "normal"
+            
+            days_before = (booking["travel_date"] - datetime.now(timezone.utc).date()).days
+            
+            if service_type == "express":
+                if days_before >= 2:
+                    refund_pct = 1.0
+                elif days_before == 1:
+                    refund_pct = 0.5
+                else:
+                    refund_pct = 0.0
+            else: # normal
+                if days_before >= 2:
+                    refund_pct = 1.0
+                elif days_before == 1:
+                    refund_pct = 0.75
+                elif days_before == 0:
+                    refund_pct = 0.5
+                else:
+                    refund_pct = 0.0
+            
+            refund_amount_usd = float(booking["amount_usd"]) * refund_pct
             
             cur.execute("UPDATE national_rail_bookings SET status = 'cancelled' WHERE booking_id = %s", (booking_id,))
             cur.execute("UPDATE payments SET status = 'refunded' WHERE booking_id = %s", (booking_id,))
@@ -404,7 +458,7 @@ def execute_cancellation(booking_id: str, user_id: str) -> tuple[bool, dict | st
             "booking_id": booking_id,
             "status": "cancelled",
             "refund_amount_usd": refund_amount_usd,
-            "policy_note": "75% refunded per standard policy"
+            "policy_note": f"{int(refund_pct * 100)}% refunded per standard policy"
         }
     except Exception as e:
         conn.rollback()
