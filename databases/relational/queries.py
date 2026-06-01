@@ -1,12 +1,13 @@
+# TASK 6 EXTENSION: Added UI history helper and documented query changes
 """
 TransitFlow — PostgreSQL / Relational Database Layer
 =====================================================
 This module handles all queries to PostgreSQL.
 
 TWO ROLES ARE SERVED HERE:
-  1. Relational  → dual-network transit (metro + national rail),
-                   availability, fares, bookings, seat selection
-  2. Vector      → policy document similarity search (pgvector)
+    1. Relational  → dual-network transit (metro + national rail),
+                                     availability, fares, bookings, seat selection
+    2. Vector      → policy document similarity search (pgvector)
 
 STUDENT TASK
 ------------

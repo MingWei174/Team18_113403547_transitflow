@@ -1,3 +1,4 @@
+# TASK 6 EXTENSION: Seed support for demo history entries (see TASK6.md)
 """
 Seed PostgreSQL with all TransitFlow mock data from train-mock-data/.
 

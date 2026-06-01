@@ -1,3 +1,4 @@
+# TASK 6 EXTENSION: Added 'My History' panel (see TASK6.md)
 """
 TransitFlow — Gradio Web Interface
 ====================================
@@ -247,6 +248,42 @@ def forgot_reset_password(email: str, answer: str, new_password: str):
     return gr.update(value="**Password reset successfully. You can now log in.**", visible=True)
 
 
+def do_show_history(current_user_email: str):
+    """Return a Markdown summary of the current user's booking history.
+
+    This function is a small UI helper used by the Task 6 extension. It calls
+    `query_user_bookings` and formats the results into readable Markdown so the
+    user can inspect past national rail bookings and metro trips.
+    """
+    if not current_user_email:
+        return gr.update(value="Please log in to view your history.", visible=True)
+
+    try:
+        from databases.relational.queries import query_user_bookings
+        data = query_user_bookings(current_user_email)
+    except Exception as e:
+        return gr.update(value=f"Failed to load history: {e}", visible=True)
+
+    parts = ["### My Travel History\n"]
+    nr = data.get("national_rail", [])
+    if nr:
+        parts.append("**National Rail bookings:**\n")
+        for b in nr:
+            parts.append(f"- `{b.get('booking_id')}` {b.get('travel_date')} — {b.get('origin_station_id')} → {b.get('destination_station_id')} — ${b.get('amount_usd'):.2f} — {b.get('status')}")
+    else:
+        parts.append("**National Rail bookings:** None\n")
+
+    metro = data.get("metro", [])
+    if metro:
+        parts.append("\n**Metro trips:**\n")
+        for t in metro:
+            parts.append(f"- `{t.get('trip_id')}` {t.get('travel_date')} — {t.get('origin_station_id')} → {t.get('destination_station_id')} — ${t.get('amount_usd'):.2f} — {t.get('status')}")
+    else:
+        parts.append("\n**Metro trips:** None\n")
+
+    return gr.update(value="\n".join(parts), visible=True)
+
+
 # ── Panel visibility toggles ──────────────────────────────────────────────────
 
 def show_login_panel():
@@ -371,6 +408,10 @@ with gr.Blocks(title="TransitFlow") as demo:
             )
             provider_status = gr.Markdown(value="**Active:** llama3.2:1b")
             ollama_status   = gr.Markdown(value=get_ollama_status())
+
+            # TASK 6: History panel trigger and display
+            my_history_btn = gr.Button("My History", size="sm")
+            history_display = gr.Markdown("", visible=False)
 
             gr.Markdown("---")
 
@@ -498,6 +539,13 @@ with gr.Blocks(title="TransitFlow") as demo:
         fn=forgot_reset_password,
         inputs=[forgot_email_in, forgot_answer_in, forgot_new_password_in],
         outputs=[forgot_msg],
+    )
+
+    # TASK 6: history button wiring
+    my_history_btn.click(
+        fn=do_show_history,
+        inputs=[current_user_state],
+        outputs=[history_display],
     )
 
 

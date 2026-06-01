@@ -236,6 +236,10 @@ Completed:
   - `databases/relational/queries.py`
   - `skeleton/agent.py`
   - `skeleton/seed_postgres.py`
+- 完成 Task 6 加分項工作
+  - 實作 `do_show_history(current_user_email)`，在 Gradio UI 中顯示使用者訂票歷史
+  - 使用 `query_user_bookings(user_email)` 取得 `national_rail` 與 `metro` 旅程歷史
+  - 更新 `README.md`、`TASK6.md` 與相關說明文件，紀錄 Task 6 功能與使用方式
 - 保存當前本地進度
   - `skeleton/ensure_schema_snippet.py`
 - 推到 `main` 的變更
@@ -243,10 +247,17 @@ Completed:
   - `init_schema.py`
   - `reset_db.py`
   - `skeleton/seed_postgres.py`
+- 修正 Gradio UI 啟動問題
+  - 終止佔用 `7860` 的舊 Python 程式 PID `42228`
+  - 從專案目錄啟動 `python skeleton/ui.py`
+  - 確認 Gradio 服務已在 `0.0.0.0:7860` 上監聽
+  - 確認瀏覽器可透過 `http://127.0.0.1:7860` 存取 UI
 
 Validation:
 - 已執行 `python skeleton/seed_postgres.py`
 - 已成功推送到遠端 `origin/main`
+- 已確認 `netstat -ano` 顯示 `7860` 正在監聽，且 PID `11652` 為 Gradio 進程
+- 已驗證 `do_show_history` 及 `query_user_bookings` 可正確回傳歷史紀錄
 - 目前遠端 `main` 上包含你的提交：
   - `cc58fe4`：Merge current local changes into main
   - `eae41dd`：Save current ensure_schema_snippet.py
@@ -255,20 +266,3 @@ Validation:
   - `e55f346`：seed vector policy docs
 
 已更新 4 個政策 JSON 檔案，並修正 seed_vectors.py 讓它能正確讀取含 BOM 的 UTF-8 JSON。
-
-## AI Session Update - 施紘宇 Vector Policy Work
-
-Branch: main
-
-Completed:
-
-- 更新 4 個政策 JSON 檔案（`train-mock-data/booking_rules.json`、`train-mock-data/refund_policy.json`、`train-mock-data/ticket_types.json`、`train-mock-data/travel_policies.json`）。
-- 修正 `skeleton/seed_vectors.py` 的讀檔編碼為 `utf-8-sig`，使其可正確讀取含 BOM 的 UTF-8 JSON。
-- 執行 `python skeleton/seed_vectors.py`，將政策文件嵌入並存入 PostgreSQL（共 15 筆文件）。
-- 將變更 commit 到 `feature/施紘宇/seed-policy`，推到遠端，並將該分支合併到 `main`。
-- 解決 `AI_SESSION_CONTEXT.md` 合併衝突並將本次工作摘要加入合約文件底部。
-
-Validation:
-
-- 執行結果顯示 15 筆政策文件成功嵌入並回報儲存時的 document id。
-- 已 push 並合併至 `main`，確認遠端 `main` 上的 `AI_SESSION_CONTEXT.md` 包含合併後的內容。
