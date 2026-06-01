@@ -25,7 +25,7 @@ from __future__ import annotations
 import json
 import random
 import string
-import hashlib
+import bcrypt  # pyrefly: ignore [missing-import]
 from datetime import datetime, timezone
 from typing import Optional
 
@@ -470,7 +470,7 @@ def execute_cancellation(booking_id: str, user_id: str) -> tuple[bool, dict | st
 # ── AUTHENTICATION QUERIES ────────────────────────────────────────────────────
 
 def _hash_password(password: str, salt: str) -> str:
-    return hashlib.sha256((salt + password).encode('utf-8')).hexdigest()
+    return bcrypt.hashpw(password.encode('utf-8'), salt.encode('utf-8')).decode('utf-8')
 
 
 def register_user(
@@ -492,7 +492,7 @@ def register_user(
                 
             suffix = "".join(random.choices(string.ascii_uppercase + string.digits, k=6))
             user_id = f"RU-{suffix}"
-            salt = "".join(random.choices(string.ascii_letters + string.digits, k=16))
+            salt = bcrypt.gensalt().decode('utf-8')
             
             password_hash = _hash_password(password, salt)
             secret_answer_hash = _hash_password(secret_answer.lower(), salt)

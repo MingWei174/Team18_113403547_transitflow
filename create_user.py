@@ -1,5 +1,5 @@
 import argparse
-import hashlib
+import bcrypt
 import json
 import os
 from datetime import datetime
@@ -10,7 +10,7 @@ PASSWORD_FILE = DATA_DIR / "user_password.json"
 
 
 def hash_password(password: str, salt: str) -> str:
-    return hashlib.sha256((password + salt).encode("utf-8")).hexdigest()
+    return bcrypt.hashpw(password.encode("utf-8"), salt.encode("utf-8")).decode("utf-8")
 
 
 def load_passwords():
@@ -27,7 +27,7 @@ def save_passwords(passwords):
 
 
 def upsert_password(user_id: str, password: str):
-    salt = os.urandom(16).hex()
+    salt = bcrypt.gensalt().decode("utf-8")
     password_hash = hash_password(password, salt)
     updated_at = datetime.utcnow().isoformat() + "Z"
 

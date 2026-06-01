@@ -179,12 +179,13 @@ Completed:
 - 將多筆寫入操作包裝於 `try...except` 區塊中，執行多個 `cur.execute` 後呼叫 `conn.commit()` 確保交易完整性，發生例外則呼叫 `conn.rollback()`。
 - 實作 `execute_cancellation` 取消訂單邏輯，使用 `FOR UPDATE` 鎖避免併發問題，並根據規則更新訂單狀態與退費。
 - 實作常客點數更新邏輯，使用語法：`UPDATE users SET loyalty_points = loyalty_points + %s WHERE user_id = %s`。
-- 實作 Auth 身分驗證系統 (`register_user`, `login_user` 等)，採用 `hashlib.sha256` 搭配隨機 salt 進行密碼與安全問答的安全雜湊儲存。
+- 實作 Auth 身分驗證系統 (`register_user`, `login_user` 等)，原本採用 `hashlib.sha256` 搭配隨機 salt，現已全面升級為 `bcrypt` 進行密碼與安全問答的安全雜湊儲存。
 - 成功將 `feature/zmmwei/relational-schema` 的變更合併至 `main` 分支並推送到遠端儲存庫。
 - **[Bug Fix] 完善訂票邏輯 (`execute_booking`)**：加入座位檢查與 `"any"` 自動選位功能，並根據排程的 `stops_in_order` 動態計算跨站票價 (`stops_travelled`)，最後補上寫入 `payments` 資料表的付款紀錄。
 - **[Bug Fix] 完善退票邏輯 (`execute_cancellation`)**：實裝 Refund Policy (RF001 / RF002) 規則，利用 `service_type` 與計算距離出發日的天數來動態決定退款比例 (100%, 75%, 50%, 0%)，取代靜態的 75%。
 - **[Bug Fix] Schema 修正**：將 `feedback` 資料表的建表邏輯整合進正式的 `databases/relational/schema.sql`，並移除 `skeleton/seed_postgres.py` 中臨時的建表語法。
 - **[Bug Fix] Neo4j Graph Queries 防呆 (`databases/graph/queries.py`)**：修正了 `query_delay_ripple` 在 `hops=0` 時的邊界條件邏輯（應對 Live Testing C5 情境），修改下限確保能正確且僅回傳發生延誤的車站本身。
+- **[Security Fix] 升級密碼雜湊演算法**：將專案中的 `hashlib.sha256` 全面替換為業界標準的 `bcrypt`，確保符合安全規範（消除 0 分地雷）。修改了 `create_user.py` 與 `databases/relational/queries.py` 中的密碼驗證及 `register_user` 邏輯，並將 `bcrypt>=4.1.2` 加入 `requirements.txt`。
 
 Validation:
 - 驗證交易管理功能，包含資料成功寫入時的提交 (commit) 與發生錯誤時的回滾 (rollback) 機制。
