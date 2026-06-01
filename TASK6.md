@@ -1,40 +1,36 @@
 TASK 6 EXTENSION CHECKLIST
 ==========================
 
-This file lists all files modified or added for the Task 6 Optional Extension
-(My History panel). The course rubric requires a file at project root and a
-marker comment at the top of each modified source file: `# TASK 6 EXTENSION:`.
+This file lists all files modified or added for the Task 6 Optional Extension.
+Our team implemented a dual-feature extension: **My History Panel (UI)** + **Loyalty Points System (Database/Schema Change)**.
+The course rubric requires a file at project root and a marker comment at the top 
+of each modified source file: `# TASK 6 EXTENSION:`.
 
 Modified files and functions
 ----------------------------
 
-- skeleton/ui.py
+- **databases/relational/schema.sql**
+  - Added `loyalty_points INT DEFAULT 0` column to the `users` table.
+  - Added `# TASK 6 EXTENSION:` marker and a `[WHY]` comment explaining the design decision for placing the points column in the users table.
+
+- **databases/relational/queries.py**
+  - Added `# TASK 6 EXTENSION:` marker and a `[WHY]` comment inside `execute_booking()` explaining why the loyalty points update must be executed within the main booking transaction to ensure ACID compliance.
+  - Added the SQL execution logic to update `loyalty_points` based on ticket price (`points_earned = int(amount_usd)`).
+  - Uses existing `query_user_bookings(user_email)` for the UI history feature.
+
+- **DESIGN_DOCUMENT.md**
+  - Added Section 7 detailing the Motivation, Schema modifications, Cypher/SQL Query examples, and Testing Evidence for the Task 6 extension.
+
+- **skeleton/ui.py**
   - Added top-of-file marker: `# TASK 6 EXTENSION: Added 'My History' panel (see TASK6.md)`
-  - Added function: `do_show_history(current_user_email)` — formats combined
-    booking/trip history into Markdown for display.
-  - Added UI components: `my_history_btn` and `history_display` and event
-    wiring to call `do_show_history`.
-
-- databases/relational/queries.py
-  - Added top-of-file marker: `# TASK 6 EXTENSION: Added UI history helper and documented query changes`
-  - Uses existing `query_user_bookings(user_email)` which returns a dict with
-    keys `national_rail` and `metro`.
-
-- skeleton/seed_postgres.py
-  - Added top-of-file marker: `# TASK 6 EXTENSION: Seed support for demo history entries (see TASK6.md)`
-  - Seeder already inserts `national_rail_bookings` and `metro_travel_history`.
-
-- README.md
-  - Appended Section 7 describing motivation, schema notes, sample queries,
-    and verification steps for the Task 6 extension.
+  - Added function: `do_show_history(current_user_email)` — formats combined booking/trip history into Markdown for display.
+  - Added UI components: `my_history_btn` and `history_display` and event wiring.
 
 Why these files
 ---------------
-The extension is intentionally small and focused on demonstrating a database-
-backed feature (history view). No new schema was required because the project
-already contains the bookings and trip tables. The work therefore focused on
-adding a usable UI hook, documenting the change, and ensuring the grader's
-checklist (this file + top-of-file markers) is present.
+To fully satisfy the "Static Code" grading criteria for modifying the database schema and adding new queries, we implemented a **Loyalty Points System**. The schema change ensures that the DB effectively tracks user rewards, while the query modifications dynamically update points upon successful bookings using transactional guarantees. 
+
+Simultaneously, we provided a **My History Panel** on the frontend to visualize booking records, delivering a complete full-stack extension.
 
 How to test
 -----------
@@ -47,8 +43,6 @@ How to test
    ```bash
    python skeleton/ui.py
    ```
-3. Log in with an email from `train-mock-data/registered_users.json` and click
-   **My History** in the sidebar.
-
-If you want, I can now run the UI locally and demonstrate the flow, or add
-additional formatting (tables) and screenshots for the design document.
+3. Log in with an email from `train-mock-data/registered_users.json` and make a new booking via the chat.
+4. Check pgAdmin (`users` table) to verify the `loyalty_points` increased according to the ticket price.
+5. Click **My History** in the sidebar to verify your past bookings.

@@ -396,6 +396,11 @@ def execute_booking(
                 VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, 'confirmed')
             """, (booking_id, user_id, schedule_id, origin_station_id, destination_station_id, travel_date, fare_class, ticket_type, seat_id, amount_usd))
             
+            # TASK 6 EXTENSION: 累積常客點數
+            # [WHY] 為什麼要把點數更新寫在同一個 function 的 Transaction 裡面？
+            # 為了保證「資料一致性 (ACID)」。如果分開兩次 commit，可能會發生「訂單成立但點數更新失敗」
+            # 或「點數增加但訂票 rollback」的狀況。把點數更新放在同一個 try-except 和 commit 區塊內，
+            # 可以確保「訂票」與「贈點」是綁定的原子操作 (Atomic Operation)。
             points_earned = int(amount_usd)
             cur.execute("""
                 UPDATE users 

@@ -40,6 +40,10 @@ CREATE TABLE users (
     first_name    VARCHAR(50) NOT NULL,
     surname       VARCHAR(50) NOT NULL,
     year_of_birth INT,
+    -- TASK 6 EXTENSION: 常客忠誠度系統
+    -- [WHY] 為什麼點數要存在 users 表而不是獨立的 points_ledger 表？
+    -- 因為目前的商業邏輯只需要追蹤「當前點數總額」，而不需查詢詳細的「點數增減歷史明細」。
+    -- 將 loyalty_points 設計為 INT 欄位並直接依附於 users 表，可有效減少 Join 負擔並提升查詢效率。
     loyalty_points INT DEFAULT 0
 );
 

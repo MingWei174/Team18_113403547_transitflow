@@ -149,3 +149,57 @@
 
 3. **快取機制 (Caching):** 針對極少變動的時刻表 (Schedules) 與政策文件 (Policy Documents
 )，我們會引入 Redis 作為快取層，降低資料庫的讀取壓力並加速回應。
+
+---
+
+# Section 7 — TASK 6 Extension: 常客忠誠度點數系統 (Loyalty Points)
+
+### 動機 Motivation
+
+為了提高常客的忠誠度與黏著度，我們在 TransitFlow 系統中引入了「會員點數系統 (Loyalty Points)」。當使用者註冊後，每次購買火車票 (National Rail) 時，系統會根據實際支付的金額 (票價) 自動累積等值的點數。此功能為未來的點數折抵、會員升級機制打下基礎，是提升平台商業價值的重要功能。
+
+此外，為了提供更好的使用者體驗，我們在前端 (UI) 同時實作了「My History (歷史紀錄) 面板」，讓使用者能隨時查看過去的訂票紀錄與搭乘明細。
+
+### Schema 變更說明
+為了支援點數功能，我們在 `users` 資料表中新增了 `loyalty_points` 欄位。
+
+**設計考量 (Why)：**
+點數紀錄直接依附於 `users` 資料表，因為目前的商業邏輯只需要追蹤「當前點數總額」，而不需查詢詳細的「點數增減歷史明細」。將 `loyalty_points` 設計為 `INT` 欄位，可有效減少 Join 負擔並提升查詢效率。
+
+**Schema SQL Snippet:**
+```sql
+CREATE TABLE users (
+    user_id       VARCHAR(20) PRIMARY KEY,
+    email         VARCHAR(255) UNIQUE NOT NULL,
+    first_name    VARCHAR(50) NOT NULL,
+    surname       VARCHAR(50) NOT NULL,
+    year_of_birth INT,
+    -- TASK 6 EXTENSION: 常客忠誠度系統
+    -- [WHY] 直接將點數合併在 users 表中以提升查詢效率
+    loyalty_points INT DEFAULT 0
+);
+```
+
+### 查詢範例 Example queries
+點數的新增邏輯實作於 `databases/relational/queries.py` 的 `execute_booking()` 函數中。
+
+**設計考量 (Why)：**
+為什麼要把點數更新寫在同一個 Transaction 裡面？為了保證「資料一致性 (ACID)」。將點數更新與訂單新增放在同一個 try-except 和 commit 區塊內，確保「訂票」與「贈點」是綁定的原子操作。如果訂票失敗發生 rollback，點數更新也會一併復原，避免送出幽靈點數。
+
+**Query SQL Snippet:**
+```sql
+-- 當訂單成立時，根據 amount_usd 計算 points_earned 並更新點數
+UPDATE users 
+SET loyalty_points = loyalty_points + %(points_earned)s 
+WHERE user_id = %(user_id)s;
+```
+
+### 我們的測試證據 Testing evidence
+**驗證步驟：**
+1. 透過 UI 介面登入使用者帳號。
+2. 進行一筆新的火車票訂購 (例如花費 $120)。
+3. 開啟 `pgAdmin` (http://localhost:5051) 或使用截圖，檢查 `users` 表格中該名使用者的 `loyalty_points` 是否成功增加了對應點數。
+4. 在 UI 介面點擊「My History」按鈕，確認能順利載入剛才的訂單紀錄。
+
+> [!IMPORTANT]
+> **(請在此處貼上您透過 pgAdmin 確認點數增加，或是 UI 測試成功的截圖，以利助教給分！)**

@@ -265,51 +265,6 @@ source .venv/bin/activate
 **Windows (PowerShell):**
 ```powershell
 python -m venv .venv
-
----
-
-## **Section 7 — TASK 6 Extension: My History Panel**
-
-Motivation
-----------
-Add a small, demonstrable database-driven feature so logged-in users can
-inspect their past national rail bookings and metro trips from the UI. This
-is intentionally a read-only extension (no booking/cancel flows) designed to
-meet the Course Task 6 bonus criteria: substantive DB extension, code
-comments, documentation, and a dedicated `TASK6.md` checklist.
-
-What changed (high level)
--------------------------
-- `skeleton/ui.py`: Added a `My History` button and `do_show_history()` helper
-    that formats booking history into Markdown for display.
-- `databases/relational/queries.py`: Added a top-level TASK 6 marker comment
-    and the existing `query_user_bookings()` function is used by the UI.
-- `skeleton/seed_postgres.py`: Added TASK 6 marker comment; seeder already
-    populates `national_rail_bookings` and `metro_travel_history` from
-    `train-mock-data/`.
-- `TASK6.md`: New file at project root listing modified files and functions
-    (required by the assignment rubric).
-
-How to verify
--------------
-1. Ensure Docker containers are running: `docker compose up -d`
-2. Seed the database (if not already seeded):
-     ```bash
-     python skeleton/seed_postgres.py
-     ```
-3. Start the UI:
-     ```bash
-     python skeleton/ui.py
-     ```
-4. Login with a seeded user email (see `train-mock-data/registered_users.json`),
-     then click **My History** in the sidebar to view your bookings and trips.
-
-Notes for graders
------------------
-All modified code files include the required top-of-file comment: `# TASK 6 EXTENSION:`.
-See `TASK6.md` for the exact checklist of files and functions changed for this
-bonus extension.
-
 .venv\Scripts\Activate.ps1
 ```
 
