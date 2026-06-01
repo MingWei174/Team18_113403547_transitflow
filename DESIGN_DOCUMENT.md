@@ -14,17 +14,17 @@
 # Section 2 — Normalisation Justification
 
 ### 2NF / 3NF 正規化決策與考量
-*(請舉出一個專案中的具體例子，並使用如「Functional Dependency (函數相依性)」等專業術語來解釋。)*
-**範例說明：**
+
+**設計說明：**
 在我們的設計中，停靠站 (Stations) 與路線 (Schedules) 之間的關係被放置於一個 Junction Table (中介表) 中，而不是直接將陣列 (Array) 存在路線表裡。這是為了滿足第一正規形 (1NF) 的不可分割性 (Atomicity)，並確保非主鍵屬性完全相依於主鍵 (2NF)，消除部分相依，進而避免更新異常 (Update Anomaly)。
 
 ### 反正規化 (De-normalisation) 考量
-*(請解釋你們是否有為了效能而採用反正規化，或者解釋為何全正規化最適合。)*
-**範例說明：**
+
+**設計說明：**
 我們在 `national_rail_schedules` 中將 `stops` 存為 JSONB 格式（包含停靠順序等）。這是一種適度的反正規化設計，主要為了「簡化查詢」與「提升讀取效能」。若完全正規化，查詢一條路線的完整停靠順序需要多次 Join，在頻繁讀取的訂票系統中可能造成效能瓶頸。
 
 ### 密碼安全與 Hashing 機制
-在密碼保護方面，我們選用了 **bcrypt** 演算法。
+在密碼保護方面，我們是使用了 **bcrypt** 演算法。
 - **為什麼比 MD5/SHA 更好：** MD5 或 SHA 家族是設計用來快速計算的，容易遭受硬體加速的暴力破解。相對地，bcrypt 內建了「工作因數 (Work Factor / Cost)」，會刻意消耗較多的運算資源與記憶體，這能有效拖慢攻擊者的運算速度，大幅提升防範暴力破解 (Brute-force attacks) 的能力。
 - **Salt (鹽) 的運作：** 每個使用者的密碼在雜湊前都會加入一段隨機生成的 Salt。這確保了即使兩個使用者設定了一模一樣的密碼，最終存入資料庫的 Hash 值也會完全不同，從而有效防止「彩虹表 (Rainbow-table) 攻擊」。
 
@@ -71,25 +71,32 @@
 
 # Section 5 — AI Tool Usage Evidence
 
-*(請提供 3 到 5 個實際使用 AI 的例子。注意：必須有一個例子是關於「AI 犯錯並由你們糾正」的過程。)*
 
 ### 範例 1：設計資料庫 Schema
 - **Context (情境):** 在初期規劃 PostgreSQL 的關聯式資料庫結構時，我們需要設計能同時支援單程票與來回票的訂單結構。
-- **Prompt (提示詞):** "I need to design a PostgreSQL database schema for a train booking system. It should handle users, national rail schedules, and bookings (supporting both single and return tickets). Please provide the initial DDL scripts."
+- **Prompt (提示詞):** "我需要設計一個火車訂票系統的 PostgreSQL 資料庫 Schema，要有使用者、台鐵時刻表、和訂單（要能支援單程票跟來回票），請幫我寫出初步的 DDL。"
 - **Outcome (結果):** AI 提供了一個基礎的 `CREATE TABLE` 腳本，我們依此建立了 `national_rail_bookings` 表格，並加入了 `ticket_type` 欄位以滿足來回票需求。
 
 ### 範例 2：撰寫 Cypher 查詢 (尋找轉乘站)
 - **Context (情境):** 我們在 Neo4j 中需要寫一段 Cypher 語法，用來找出能從 Metro 網路轉乘到 National Rail 網路的車站。
-- **Prompt (提示詞):** "Write a Neo4j Cypher query to find all interchange stations where a user can transfer between the 'Metro' network and the 'NationalRail' network."
+- **Prompt (提示詞):** "請幫我寫一段 Neo4j Cypher 語法，我要找出所有可以從 'Metro' (捷運) 轉乘到 'NationalRail' (台鐵) 的轉乘車站。"
 - **Outcome (結果):** AI 提供了 `MATCH (s:Station)-[:PART_OF]->(n1:Network {name: 'Metro'}), (s)-[:PART_OF]->(n2:Network {name: 'NationalRail'}) RETURN s` 的語法，幫助我們快速實作了跨網轉乘的查詢邏輯。
 
-### 範例 3：AI 錯誤修正 (Debug) - 必考題
+### 範例 3：AI 生成程式碼錯誤並修正 (Debug)
 - **Context (情境):** 在實作密碼雜湊時，我們請 AI 幫忙寫 Python 程式碼來比對密碼。
-- **Prompt (提示詞):** "How to check if a provided password matches the stored bcrypt hash in Python?"
+- **Prompt (提示詞):** "在 Python 裡面，要怎麼檢查使用者輸入的密碼跟資料庫存的 bcrypt hash 有沒有吻合？"
 - **Outcome (結果):** AI 起初建議使用 `bcrypt.checkpw(password, hashed_password)`，但因為我們的字串編碼沒有處理好，導致 `TypeError` (字串必須先 encode 成 bytes)。
 - **如何發現與糾正:** 我們在測試登入 API 時發現系統拋出異常。檢查後發現 `bcrypt` 函式庫要求參數必須是 `bytes` 型別。最後我們將程式碼修正為 `password.encode('utf-8')`，成功解決了編碼錯誤問題。
 
-*(可自行再補充第4、第5個例子)*
+### 範例 4：實作相鄰座位自動劃位演算法
+- **Context (情境):** 在乘客訂票時若選擇 `seat_id="any"`，系統需要自動從剩餘座位中挑選相鄰座位（同車廂同排優先）。
+- **Prompt (提示詞):** "請幫我用 Python 寫一個演算法：我有一堆可用座位（包含車廂、排、列資訊），如果使用者一次訂多張票，要怎麼自動選出『相鄰』的座位並回傳它們的 ID？"
+- **Outcome (結果):** AI 給出了一段利用 `collections.defaultdict` 將座位按照 `row` 進行分組並排序的邏輯。我們將這段程式碼整合進 `auto_select_adjacent_seats` 函數中，成功滿足了自動劃位需求。
+
+### 範例 5：解決向量搜尋 (RAG) 關聯度過低的問題
+- **Context (情境):** 測試政策文件問答時，發現有時使用者的查詢會搜出完全不相關的政策文件，導致 AI 產出不相干的回答。
+- **Prompt (提示詞):** "我在用 PostgreSQL 的 pgvector 算 cosine similarity，有時候會搜出不相干的東西。要怎麼在 SQL 裡面加上過濾條件，只回傳相似度比較高的結果？"
+- **Outcome (結果):** AI 建議在 SQL 的 `WHERE` 子句中加上 `1 - (embedding <=> query_vector) > threshold` 來過濾。我們據此在 `query_policy_vector_search` 中引入了 `VECTOR_SIMILARITY_THRESHOLD` 變數，大幅提升了 RAG 的回答準確度。
 
 ---
 
