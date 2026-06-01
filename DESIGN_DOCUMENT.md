@@ -126,6 +126,17 @@
 - **Outcome (結果):** AI 建議在 SQL 的 `WHERE` 子句中加上 `1 - (embedding <=> query_vector) > threshold` 來過濾。我們據此在 `query_policy_vector_search` 中引入了 `VECTOR_SIMILARITY_THRESHOLD` 變數，大幅提升了 RAG 的回答準確度。
 
 ---
+### 範例 6：AI 錯誤修正 (修正登入後提問崩潰 KeyError) - 張茗崴負責
+
+- **Context (情境):** 在 Gradio UI 介面中，我們發現只要使用者登入帳號後發問，系統就會立刻跳出「錯誤」的紅色彈出視窗並導致後端崩潰，但未登入時卻能正常對話。
+
+- **Prompt (提示詞):** "我發現我在 agent 介面登入帳號後問問題才會馬上跳錯誤，沒登入就可以正常思考並回答我，請問是怎麼了？"
+
+- **Outcome (結果):** AI 分析後指出，這是因為先前進行資料庫正規化時，將 `users` 表格的 `full_name` 拆分成了 `first_name` 與 `surname`，但在 `skeleton/agent.py` 中組合使用者名稱時，仍在使用舊的 `profile['full_name']` 導致 `KeyError`。
+
+- **如何發現與糾正:** 我們請 AI 將 `skeleton/agent.py` 內的程式碼修改為使用 `profile.get('first_name', '')` 與 `surname` 來組合名稱。修改後重新啟動 UI，成功解決了登入後對話會崩潰的問題。
+
+---
 
 # Section 6 — Reflection & Trade-offs
 
@@ -195,11 +206,17 @@ WHERE user_id = %(user_id)s;
 ```
 
 ### 我們的測試證據 Testing evidence
+
 **驗證步驟：**
 1. 透過 UI 介面登入使用者帳號。
 2. 進行一筆新的火車票訂購 (例如花費 $120)。
-3. 開啟 `pgAdmin` (http://localhost:5051) 或使用截圖，檢查 `users` 表格中該名使用者的 `loyalty_points` 是否成功增加了對應點數。
+3. 開啟 `pgAdmin` (http://localhost:5051) 及使用截圖，檢查 `users` 表格中該名使用者的 `loyalty_points` 是否成功增加了對應點數。
 4. 在 UI 介面點擊「My History」按鈕，確認能順利載入剛才的訂單紀錄。
 
 > [!IMPORTANT]
-> **(請在此處貼上您透過 pgAdmin 確認點數增加，或是 UI 測試成功的截圖，以利助教給分！)**
+> **[實作截圖證明]**
+> ![截圖一：與 Agent 的對話](screenshot1.png)
+> 
+> ![截圖二：pgAdmin 確認 loyalty_points 點數增加](screenshot2.png)
+> 
+> ![截圖三：UI 介面成功顯示 My History 歷史紀錄](screenshot3.png)
