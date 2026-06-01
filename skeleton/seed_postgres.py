@@ -241,8 +241,12 @@ def seed_users(cur):
 
         # password hashing using bcrypt, matching the login/register flow
         raw_pw = u.get("password", "")
-        salt = bcrypt.gensalt().decode("utf-8")
-        pw_hash = bcrypt.hashpw(raw_pw.encode("utf-8"), salt.encode("utf-8")).decode("utf-8")
+        if raw_pw.startswith("$2"):
+            pw_hash = raw_pw
+            salt = raw_pw[:29]
+        else:
+            salt = bcrypt.gensalt().decode("utf-8")
+            pw_hash = bcrypt.hashpw(raw_pw.encode("utf-8"), salt.encode("utf-8")).decode("utf-8")
         passwords_rows.append((user_id, pw_hash, salt))
 
         # security question
