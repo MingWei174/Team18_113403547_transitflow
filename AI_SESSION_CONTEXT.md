@@ -188,6 +188,9 @@ Completed:
 - **[Bug Fix] Schema 修正**：將 `feedback` 資料表的建表邏輯整合進正式的 `databases/relational/schema.sql`，並移除 `skeleton/seed_postgres.py` 中臨時的建表語法。
 - **[Bug Fix] Neo4j Graph Queries 防呆 (`databases/graph/queries.py`)**：修正了 `query_delay_ripple` 在 `hops=0` 時的邊界條件邏輯（應對 Live Testing C5 情境），修改下限確保能正確且僅回傳發生延誤的車站本身。
 - **[Security Fix] 升級密碼雜湊演算法**：將專案中的 `hashlib.sha256` 全面替換為業界標準的 `bcrypt`，確保符合安全規範（消除 0 分地雷）。修改了 `create_user.py` 與 `databases/relational/queries.py` 中的密碼驗證及 `register_user` 邏輯，並將 `bcrypt>=4.1.2` 加入 `requirements.txt`。
+- **[Documentation] 完成設計文件 (`DESIGN_DOCUMENT.md`)**：依據標準建立並完善了 Section 1 到 Section 6 的內容。包含 ER 圖與 Cardinality (1:N) 說明、2NF/3NF 正規化決策與 bcrypt 安全機制解說、圖形資料庫演算法優勢、Vector RAG 的餘弦相似度與維度原理，以及 5 個真實且生活化的繁體中文 AI 互動紀錄（含 Debug 除錯過程）。
+- **[Documentation] 生成專業 ER 圖 (`資料庫ER圖.png`)**：使用 `dbdiagram.io` 將現有的 PostgreSQL Schema 自動匯出為包含主外鍵 (PK/FK) 及完整 1:N 關聯線的專業資料庫結構圖，並以相對路徑整合至 Markdown 文件中。
+- **[Code Quality] 補齊 Static Code 的「為什麼」註解**：在 `databases/relational/queries.py` 中針對關鍵架構加入 `[WHY]` 解釋性註解（如：為何在 Python 中處理 JSONB 陣列、為何用 `FOR UPDATE` 行級鎖避免 Race Condition、為何選用 bcrypt 與 Cosine Distance），展現系統設計的思考深度。
 
 Validation:
 - 驗證交易管理功能，包含資料成功寫入時的提交 (commit) 與發生錯誤時的回滾 (rollback) 機制。
