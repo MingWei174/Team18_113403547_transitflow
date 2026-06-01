@@ -1,3 +1,4 @@
+-- TASK 6 EXTENSION: Added loyalty_points column to users table (see TASK6.md)
 -- ============================================================
 --  TransitFlow PostgreSQL Schema
 --  Seed data is loaded separately by: python skeleton/seed_postgres.py
