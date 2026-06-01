@@ -111,7 +111,16 @@ def do_login(email: str, password: str):
             gr.update(visible=True),
         )
 
-    user = login_user(email.strip(), password)
+    try:
+        user = login_user(email.strip(), password)
+    except Exception as exc:
+        return (
+            gr.update(value=f"Login failed: {str(exc)}", visible=True),
+            None,
+            gr.update(), gr.update(), gr.update(), gr.update(),
+            gr.update(visible=True),
+        )
+
     if user is None:
         return (
             gr.update(value="Incorrect email or password.", visible=True),

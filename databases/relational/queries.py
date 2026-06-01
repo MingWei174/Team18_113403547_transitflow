@@ -22,6 +22,7 @@ are already implemented — do not modify them.
 
 from __future__ import annotations
 
+import hashlib
 import json
 import random
 import string
@@ -470,7 +471,9 @@ def execute_cancellation(booking_id: str, user_id: str) -> tuple[bool, dict | st
 # ── AUTHENTICATION QUERIES ────────────────────────────────────────────────────
 
 def _hash_password(password: str, salt: str) -> str:
-    return bcrypt.hashpw(password.encode('utf-8'), salt.encode('utf-8')).decode('utf-8')
+    if salt.startswith("$2"):
+        return bcrypt.hashpw(password.encode('utf-8'), salt.encode('utf-8')).decode('utf-8')
+    return hashlib.sha256((salt + password).encode('utf-8')).hexdigest()
 
 
 def register_user(

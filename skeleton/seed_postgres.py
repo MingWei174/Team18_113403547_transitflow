@@ -13,12 +13,11 @@ import json
 import os
 import sys
 
+import bcrypt  # pyrefly: ignore [missing-import]
 import psycopg2
 from psycopg2.extras import execute_values
 from psycopg2.extras import Json
-import hashlib
 import uuid
-import bcrypt # pyrefly: ignore [missing-import]
 
 # ── resolve paths ────────────────────────────────────────────────────────────
 SCRIPT_DIR  = os.path.dirname(os.path.abspath(__file__))
@@ -240,7 +239,7 @@ def seed_users(cur):
                 yob = None
         users_rows.append((user_id, email, first, surname, yob, 0))
 
-        # password hashing (bcrypt for seed)
+        # password hashing using bcrypt, matching the login/register flow
         raw_pw = u.get("password", "")
         salt = bcrypt.gensalt().decode("utf-8")
         pw_hash = bcrypt.hashpw(raw_pw.encode("utf-8"), salt.encode("utf-8")).decode("utf-8")
