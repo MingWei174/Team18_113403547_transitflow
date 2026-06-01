@@ -77,6 +77,11 @@ def query_national_rail_availability(
     """
     Return national rail schedules that serve both origin and destination stations
     in the correct order, along with seat occupancy for the requested travel date.
+    
+    [WHY] Why do we process the JSONB 'stops' structure in Python instead of SQL?
+    Because the JSONB structure in 'stops' makes it complex to query array ordering 
+    directly in SQL. Filtering by `origin_id` and `destination_id` order is done in 
+    Python for simplicity and maintainability, though it sacrifices some DB-level optimization.
     """
     with _connect() as conn:
         with conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor) as cur:
@@ -95,6 +100,9 @@ def query_national_rail_availability(
                         schedule = dict(row)
                         
                         if travel_date:
+                            # [WHY] Why do we check status IN ('confirmed', 'completed')?
+                            # Because we only want to count seats that are actually taken 
+                            # and paid for (or successfully booked), excluding cancelled or refunded seats.
                             cur.execute(
                                 "SELECT count(*) FROM national_rail_bookings WHERE schedule_id = %s AND travel_date = %s AND status IN ('confirmed', 'completed')",
                                 (schedule["schedule_id"], travel_date)
@@ -134,6 +142,10 @@ def query_national_rail_fare(
             base_fare = float(schedule["base_fare_usd"] or 50.00)
             per_stop = float(schedule["per_stop_rate_usd"] or 10.00)
             
+            # [WHY] Why do we calculate fare logic in Python instead of the database?
+            # Keeping the fare calculation logic in the application layer (Python) 
+            # makes it easier to update pricing rules, discounts, or complex business logic 
+            # without modifying database schemas or stored procedures.
             if fare_class.lower() == "first":
                 base_fare *= 2
                 per_stop *= 2
@@ -338,7 +350,10 @@ def execute_booking(
     
     conn = psycopg2.connect(PG_DSN)
     try:
-        # Check seats before transaction to avoid holding locks unnecessarily
+        # [WHY] Why do we check seats *before* starting the main transaction?
+        # To avoid holding expensive database locks unnecessarily. By verifying 
+        # seat availability first in a read operation, we improve concurrency and 
+        # reduce the chance of deadlocks when multiple users book simultaneously.
         if seat_id.lower() == "any":
             available_seats = query_available_seats(schedule_id, travel_date, fare_class)
             seats_to_assign = auto_select_adjacent_seats(available_seats, 1)
@@ -417,6 +432,10 @@ def execute_cancellation(booking_id: str, user_id: str) -> tuple[bool, dict | st
     conn = psycopg2.connect(PG_DSN)
     try:
         with conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor) as cur:
+            # [WHY] Why use FOR UPDATE here?
+            # FOR UPDATE places a row-level lock on the booking record. This prevents 
+            # race conditions (e.g., a double-cancellation attack) where two concurrent 
+            # requests might both read the booking as 'confirmed' and issue double refunds.
             cur.execute("SELECT * FROM national_rail_bookings WHERE booking_id = %s AND user_id = %s FOR UPDATE", (booking_id, user_id))
             booking = cur.fetchone()
             if not booking:
@@ -470,6 +489,13 @@ def execute_cancellation(booking_id: str, user_id: str) -> tuple[bool, dict | st
 # ── AUTHENTICATION QUERIES ────────────────────────────────────────────────────
 
 def _hash_password(password: str, salt: str) -> str:
+    """
+    [WHY] Why use bcrypt instead of MD5/SHA256?
+    Bcrypt includes a work factor (cost) making it computationally expensive, 
+    thus protecting against hardware-accelerated brute-force attacks. 
+    The unique salt ensures identical passwords have different hashes, 
+    preventing rainbow-table attacks.
+    """
     return bcrypt.hashpw(password.encode('utf-8'), salt.encode('utf-8')).decode('utf-8')
 
 
@@ -492,6 +518,9 @@ def register_user(
                 
             suffix = "".join(random.choices(string.ascii_uppercase + string.digits, k=6))
             user_id = f"RU-{suffix}"
+            # [WHY] Why generate a unique salt for each user?
+            # A unique salt ensures that two users with the exact same password 
+            # (or secret answer) will have entirely different hash values in the database.
             salt = bcrypt.gensalt().decode('utf-8')
             
             password_hash = _hash_password(password, salt)
@@ -630,6 +659,10 @@ def query_policy_vector_search(embedding: list[float], top_k: int = VECTOR_TOP_K
     Returns:
         List of dicts with title, category, content, and similarity score
     """
+    # [WHY] Why use the <=> operator (Cosine Distance)?
+    # We use Cosine Distance (<=>) because we care about the 'direction' or semantic 
+    # angle of the vectors, not their absolute length. This ensures we match the 
+    # meaning of the user's question, regardless of text length differences.
     sql = """
         SELECT
             title,
