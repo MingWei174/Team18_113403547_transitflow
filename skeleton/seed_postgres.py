@@ -18,6 +18,7 @@ from psycopg2.extras import execute_values
 from psycopg2.extras import Json
 import hashlib
 import uuid
+import bcrypt # pyrefly: ignore [missing-import]
 
 # ── resolve paths ────────────────────────────────────────────────────────────
 SCRIPT_DIR  = os.path.dirname(os.path.abspath(__file__))
@@ -239,16 +240,16 @@ def seed_users(cur):
                 yob = None
         users_rows.append((user_id, email, first, surname, yob, 0))
 
-        # password hashing (simple salted sha256 for seed)
+        # password hashing (bcrypt for seed)
         raw_pw = u.get("password", "")
-        salt = uuid.uuid4().hex
-        pw_hash = hashlib.sha256((salt + raw_pw).encode("utf-8")).hexdigest()
+        salt = bcrypt.gensalt().decode("utf-8")
+        pw_hash = bcrypt.hashpw(raw_pw.encode("utf-8"), salt.encode("utf-8")).decode("utf-8")
         passwords_rows.append((user_id, pw_hash, salt))
 
         # security question
         question = u.get("secret_question") or ""
         answer = u.get("secret_answer") or ""
-        answer_hash = hashlib.sha256(answer.encode("utf-8")).hexdigest()
+        answer_hash = bcrypt.hashpw(answer.lower().encode("utf-8"), salt.encode("utf-8")).decode("utf-8")
         secq_rows.append((user_id, question, answer_hash))
 
     inserted_u = insert_many(cur, "users", ["user_id", "email", "first_name", "surname", "year_of_birth", "loyalty_points"], users_rows)
@@ -353,7 +354,7 @@ def main():
         seed_national_rail_bookings(cur)
         seed_metro_travels(cur)
         seed_payments(cur)
-        seed_feedback(cur)
+        # seed_feedback(cur)  # Disabled due to MT trip id foreign key conflicts
         conn.commit()
         print("\nAll done. Database seeded successfully.")
     except Exception as e:
