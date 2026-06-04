@@ -1,4 +1,5 @@
 import argparse
+# pyrefly: ignore [missing-import]
 import bcrypt
 import json
 import os
