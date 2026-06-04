@@ -4,7 +4,7 @@
 
 | Full Name | Student ID | GitHub Username | Email |
 |-----------|-----------|----------------|-------|
-| 張茗崴 | [113403547] | [MingWei174] | [w45166148@gmai.com] |
+| 張茗崴 | [113403547] | [MingWei174] | [w45166148@gmail.com] |
 | 吳絃紘 | [請填寫學號] | [請填寫帳號] | [請填寫信箱] |
 | 施竑宇 | [請填寫學號] | [請填寫帳號] | [請填寫信箱] |
 
@@ -21,7 +21,7 @@
 | **Task 2b** — Seat & user queries | 張茗崴 | | |
 | **Task 2c** — Write operations | 張茗崴 | | 負責實作 Loyalty Points (常客點數) 更新邏輯與 Transaction 包裝 |
 | **Task 2d** — Authentication queries | 張茗崴, 施竑宇 | | 一起實作 bcrypt 密碼雜湊與驗證邏輯 |
-| **Task 3** — PostgreSQL seeding (`seed_postgres.py`) | 施竑宇,張茗崴 | | |
+| **Task 3** — PostgreSQL seeding (`seed_postgres.py`) | 施竑宇 | | |
 | **Task 4** — Neo4j graph design & seeding | 吳絃紘 | 全體組員 | 共同討論圖形節點與關聯設計，由吳絃紘主責實作 |
 | **Task 5** — Neo4j query functions | 吳絃紘 | | 負責跨網轉乘與最短路徑規劃 |
 | **Task 6** *(if attempted)* — Optional extension | 吳絃紘, 施竑宇 | 施竑宇負責 DB 點數系統，並負責 UI (My History 面板) 測試與整合 |
