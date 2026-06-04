@@ -1,11 +1,5 @@
 # Work Allocation Report — Team 18
 
-> **Instructions:** Complete this document as a team before or alongside your final submission.
-> Submit one copy per team via EEClass. This document is shared with all markers.
-> Be specific — vague entries ("we all helped") will prevent individual contribution adjustments from being applied in your favour.
-
----
-
 ## 1. Team Members
 
 | Full Name | Student ID | GitHub Username | Email |
@@ -26,11 +20,11 @@
 | **Task 2a** — Core availability & fare queries | 張茗崴 | | |
 | **Task 2b** — Seat & user queries | 張茗崴 | | |
 | **Task 2c** — Write operations | 張茗崴 | | 負責實作 Loyalty Points (常客點數) 更新邏輯與 Transaction 包裝 |
-| **Task 2d** — Authentication queries | 張茗崴 | | 實作 bcrypt 密碼雜湊與驗證邏輯 |
-| **Task 3** — PostgreSQL seeding (`seed_postgres.py`) | 張茗崴 | | |
+| **Task 2d** — Authentication queries | 張茗崴, 施竑宇 | | 一起實作 bcrypt 密碼雜湊與驗證邏輯 |
+| **Task 3** — PostgreSQL seeding (`seed_postgres.py`) | 施竑宇,張茗崴 | | |
 | **Task 4** — Neo4j graph design & seeding | 吳絃紘 | 全體組員 | 共同討論圖形節點與關聯設計，由吳絃紘主責實作 |
 | **Task 5** — Neo4j query functions | 吳絃紘 | | 負責跨網轉乘與最短路徑規劃 |
-| **Task 6** *(if attempted)* — Optional extension | 吳絃紘, 施竑宇 | 施竑宇負責 DB 點數系統，吳絃紘負責 UI (My History 面板) 測試與整合 |
+| **Task 6** *(if attempted)* — Optional extension | 吳絃紘, 施竑宇 | 施竑宇負責 DB 點數系統，並負責 UI (My History 面板) 測試與整合 |
 | **其他** — Vector Policy / RAG 整合與測試 | 張茗崴,施竑宇 | | 一起負責 RAG 政策文件檢索、閾值(Threshold) 過濾與系統 UI 最終測試 |
 
 ### Design Document
