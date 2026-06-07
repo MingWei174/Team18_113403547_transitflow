@@ -209,14 +209,15 @@ WHERE user_id = %(user_id)s;
 
 **驗證步驟：**
 1. 透過 UI 介面登入使用者帳號。
-2. 進行一筆新的火車票訂購 (例如花費 $120)。
+2. 進行一筆新的火車票訂購 (例如花費 $8.5)。
 3. 開啟 `pgAdmin` (http://localhost:5051) 及使用截圖，檢查 `users` 表格中該名使用者的 `loyalty_points` 是否成功增加了對應點數。
 4. 在 UI 介面點擊「My History」按鈕，確認能順利載入剛才的訂單紀錄。
 
-> [IMPORTANT]
+> [!IMPORTANT]
 > **[實作截圖證明]**
+> 1. 用AliceTan帳號登入測試訂票
 > ![截圖一：與 Agent 的對話](./用AliceTan測試訂票.png)
-> 
+> 2. 成功訂票並獲得8點會員點數
 > ![截圖二：pgAdmin 確認 loyalty_points 點數增加](./成功訂票並獲得8點會員點數.png)
-> 
+> 3. 訂票成功的歷史訂票紀錄
 > ![截圖三：UI 介面成功顯示 My History 歷史紀錄](./訂票成功的訂票紀錄.png)
