@@ -215,9 +215,15 @@ WHERE user_id = %(user_id)s;
 
 > [!IMPORTANT]
 > **[實作截圖證明]**
-> 1. 用AliceTan帳號登入測試訂票
-> ![截圖一：與 Agent 的對話](./用AliceTan測試訂票.png)
-> 2. 成功訂票並獲得8點會員點數
-> ![截圖二：pgAdmin 確認 loyalty_points 點數增加](./成功訂票並獲得8點會員點數.png)
-> 3. 訂票成功的歷史訂票紀錄
-> ![截圖三：UI 介面成功顯示 My History 歷史紀錄](./訂票成功的訂票紀錄.png)
+> 
+> 1. **用 AliceTan 帳號登入測試訂票**
+> 
+>    ![截圖一：與 Agent 的對話](./用AliceTan測試訂票.png)
+> 
+> 2. **成功訂票並獲得 8 點會員點數**
+> 
+>    ![截圖二：pgAdmin 確認 loyalty_points 點數增加](./成功訂票並獲得8點會員點數.png)
+> 
+> 3. **訂票成功的歷史訂票紀錄**
+> 
+>    ![截圖三：UI 介面成功顯示 My History 歷史紀錄](./訂票成功的訂票紀錄.png)
