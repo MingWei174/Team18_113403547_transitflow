@@ -22,7 +22,7 @@ import time
 sys.path.insert(0, ".")
 
 from skeleton.llm_provider import llm
-from databases.relational.queries import store_policy_document
+from databases.relational.queries import store_policy_document, _connect
 
 _DATA_DIR = os.path.normpath(
     os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "train-mock-data")
@@ -84,11 +84,22 @@ def build_documents():
     return docs
 
 
+def _document_exists(title: str) -> bool:
+    with _connect() as conn:
+        with conn.cursor() as cur:
+            cur.execute("SELECT 1 FROM policy_documents WHERE title = %s", (title,))
+            return cur.fetchone() is not None
+
+
 def seed():
     documents = build_documents()
     print(f"📄 Embedding {len(documents)} policy documents using {llm.chat_provider}...\n")
 
     for i, doc in enumerate(documents):
+        if _document_exists(doc["title"]):
+            print(f"  [{i+1}/{len(documents)}] Skipping (already exists): {doc['title']}")
+            continue
+
         print(f"  [{i+1}/{len(documents)}] Embedding: {doc['title']}")
 
         try:

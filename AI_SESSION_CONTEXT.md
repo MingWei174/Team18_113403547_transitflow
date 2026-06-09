@@ -193,6 +193,7 @@ Completed:
 - **[Documentation] 生成專業 ER 圖 (`資料庫ER圖.png`)**：使用 `dbdiagram.io` 將現有的 PostgreSQL Schema 自動匯出為包含主外鍵 (PK/FK) 及完整 1:N 關聯線的專業資料庫結構圖，並以相對路徑整合至 Markdown 文件中。
 - **[Code Quality] 補齊 Static Code 的「為什麼」註解**：在 `databases/relational/queries.py` 中針對關鍵架構加入 `[WHY]` 解釋性註解（如：為何在 Python 中處理 JSONB 陣列、為何用 `FOR UPDATE` 行級鎖避免 Race Condition、為何選用 bcrypt 與 Cosine Distance），展現系統設計的思考深度。
 - **[Task 6 Extension] 完成常客點數與歷史紀錄 (Loyalty Points & My History)**：為確保作業對齊滿分標準，成功應對了 Llama 3.2 1B 本地模型無法正確解析並呼叫 `make_booking` (Tool Calling) 的效能瓶頸。改以手動撰寫 Python 腳本直接進入後端強制呼叫 `execute_booking` 完成交易，順利取得 pgAdmin 點數更新截圖與 UI 歷史紀錄畫面，完成 Task 6 的所有文件與程式碼要求。
+- **[Task 6 Extension] 完善常客點數 End-to-End 整合**：為了符合助教對於 Bonus 功能的嚴格定義 (UI -> Agent -> DB -> Agent -> UI)，在 `skeleton/agent.py` 中新增並註冊了 `get_loyalty_points` Tool。並加入 `Deterministic fallbacks` 攔截點數相關問題，讓使用者可以直接在聊天介面向 Agent 查詢總點數餘額，完美實現完整端到端流程。
 
 Validation:
 - 驗證交易管理功能，包含資料成功寫入時的提交 (commit) 與發生錯誤時的回滾 (rollback) 機制。

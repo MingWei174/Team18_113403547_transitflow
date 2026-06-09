@@ -8,13 +8,17 @@
 
 ### 2NF / 3NF 正規化決策與考量
 
-**設計說明：**
-在我們的設計中，停靠站 (Stations) 與路線 (Schedules) 之間的關係被放置於一個 Junction Table (中介表) 中，而不是直接將陣列 (Array) 存在路線表裡。這是為了滿足第一正規形 (1NF) 的不可分割性 (Atomicity)，並確保非主鍵屬性完全相依於主鍵 (2NF)，消除部分相依，進而避免更新異常 (Update Anomaly)。
+**設計說明 (分離 User 與 Booking)：**
+在設計訂單系統時，我們嚴格遵守了正規化原則以消除資料冗餘。在我們的 `national_rail_bookings` 表格中，我們僅儲存 `user_id` 作為外鍵，而不是將使用者的 `email`, `first_name`, `surname` 等個資直接記錄在每一筆訂單中。
+- **功能相依性 (Functional Dependency):** 使用者的姓名與信箱完全相依於 `user_id`，而與訂單的主鍵 `booking_id` 無關。若將個資寫入訂單表，將會產生**遞移相依 (Transitive Dependency)**，違反第三正規形 (3NF)。
+- **決策結果:** 透過拆分出獨立的 `users` 表格，我們成功達到了 **3NF**，確保了當使用者修改個人資料時，不需連帶更新所有過去的訂票紀錄，完美避免了更新異常 (Update Anomaly)。
 
 ### 反正規化 (De-normalisation) 考量
 
-**設計說明：**
-我們在 `national_rail_schedules` 中將 `stops` 存為 JSONB 格式（包含停靠順序等）。這是一種適度的反正規化設計，主要為了「簡化查詢」與「提升讀取效能」。若完全正規化，查詢一條路線的完整停靠順序需要多次 Join，在頻繁讀取的訂票系統中可能造成效能瓶頸。
+**設計說明 (Schedules 的 Stops JSONB 陣列)：**
+根據嚴格的正規化原則，路線 (Schedules) 與停靠站 (Stations) 的多對多關係理應拆分成一個獨立的中介表 (Junction Table, 例如 `schedule_stops`)。然而，我們在此處刻意做出了**反正規化 (De-normalisation)** 的妥協，將 `stops` 結構作為一個 `JSONB` 陣列直接儲存於 `metro_schedules` 與 `national_rail_schedules` 表格中。
+- **Trade-off 與理由:** 在火車訂票系統中，「查詢某車次的完整停靠站與時間」是極度頻繁的 Read 流量。如果採用中介表，每次查詢都必須與龐大的關聯表執行昂貴的 `JOIN` 並重新排序。
+- **效能與架構簡化:** 將停靠站打包為 `JSONB`，讓應用程式透過單次 `SELECT` 就能完整取回該車次的所有關聯資訊。雖然這犧牲了第一正規形 (1NF) 的資料不可分割性 (Atomicity)，但在本專案「寫入次數極少 (僅有 Seeding)、讀取極為頻繁 (查時刻表)」的業務情境下，這是一個為了「最大化讀取效能 (Performance)」並「簡化應用程式查詢邏輯 (Simplicity)」所做出的務實架構權衡。
 
 ### 密碼安全與 Hashing 機制
 
@@ -137,13 +141,27 @@
 - **如何發現與糾正:** 我們請 AI 將 `skeleton/agent.py` 內的程式碼修改為使用 `profile.get('first_name', '')` 與 `surname` 來組合名稱。修改後重新啟動 UI，成功解決了登入後對話會崩潰的問題。
 
 ---
+### 範例 7：將 Task 6 點數系統升級為完整 End-to-End 流程 - 張茗崴負責
+
+- **Context (情境):** 我們原本的會員點數只在底層資料庫實作更新，無法直接透過聊天室的 Agent 查詢總點數，不符合助教對於 Bonus 的「UI -> Agent -> Tool -> DB -> Agent -> UI」完整要求。
+
+- **Prompt (提示詞):** "可以幫我補救嗎" (我們請 AI 幫忙分析我們的 Task 6 點數實作，並提出修改計畫，將其整合為完整的 End-to-End)
+
+- **Outcome (結果):** AI 協助我們修改了 `skeleton/agent.py`，新增了 `get_loyalty_points` 的 Tool 註冊，並實作了查詢 `query_user_profile` 的邏輯。同時更新了 System Prompt 與 Fallback 攔截機制。修改後，使用者已可以直接在對話框問「我現在有多少點數？」並由 Agent 回答，完美達成端到端整合。
+
+---
 
 # Section 6 — Reflection & Trade-offs
 
 ### 具體設計決策與理由
 1. **決策一：主鍵選用 UUID 還是 SERIAL？**
 
-   - **理由:** 在初期規劃中，我們考慮過 UUID。但最終我們在許多內部關聯表使用了自訂字串 (如 `RU-xxxx`) 或 `SERIAL`（若有）。這是因為目前的系統規模暫不需要分散式跨區域同步，字串/整數的 Join 效能較好，且較容易在測試時人工辨識。
+   - **理由:** 在初期規劃中，我們深入考量了 UUID、SERIAL 與 VARCHAR 作為主鍵的優劣。
+     由於本專案必須匯入大量預設的 `train-mock-data` 測試資料 (例如 `"user_id": "U001"`, `"booking_id": "BK-8273A"`)，為了與這批外部資料的字串格式相容，我們在大部分既有的資料表（如 `users`, `national_rail_bookings`）中做出了妥協，選擇使用 `VARCHAR` 作為主鍵。
+     **但是，針對不需依賴舊有外部資料的獨立資料表，我們嚴格遵守了正確的資料庫觀念：**
+     - **UUID 應用 (`feedback` 表):** 我們將 `feedback_id` 設計為 `UUID DEFAULT gen_random_uuid()`。UUID 具備極高的全域唯一性 (Globally Unique)，有效避免了 VARCHAR 寫入時才檢查所帶來的碰撞風險與效能副作用。
+     - **SERIAL 應用 (`policy_documents` 表):** 針對單純內部對應的知識庫表格，由於不需要對外暴露 ID，我們選用了整數型態的 `SERIAL`，以取得最高效的 B-Tree 索引與 Join 效能。
+     這項設計證明了我們了解 UUID/SERIAL 與 VARCHAR 之間的效能差異，並在「維持外部種子資料相容性」與「資料庫正規設計原則」中做出了合理的 Trade-off。
 
 2. **決策二：將座位配置存於獨立表 `national_rail_seat_layouts`**
 

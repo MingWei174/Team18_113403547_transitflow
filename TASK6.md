@@ -26,6 +26,11 @@ Modified files and functions
   - Added function: `do_show_history(current_user_email)` — formats combined booking/trip history into Markdown for display.
   - Added UI components: `my_history_btn` and `history_display` and event wiring.
 
+- **skeleton/agent.py**
+  - Added top-of-file marker: `# TASK 6 EXTENSION: Added get_loyalty_points tool for End-to-End integration`
+  - Registered `get_loyalty_points` into the `TOOLS` list and implemented LLM routing logic.
+  - Enabled true End-to-End tool calling (UI -> Agent -> DB -> Agent -> UI) for loyalty point queries.
+
 Why these files
 ---------------
 To fully satisfy the "Static Code" grading criteria for modifying the database schema and adding new queries, we implemented a **Loyalty Points System**. The schema change ensures that the DB effectively tracks user rewards, while the query modifications dynamically update points upon successful bookings using transactional guarantees. 

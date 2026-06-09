@@ -33,6 +33,16 @@
 
 
 -- ============================================================
+-- Delete Strategy (Hard vs Soft Delete)
+-- ============================================================
+-- 我們採用 Hard Delete 策略並搭配 ON DELETE CASCADE 處理使用者相關資料
+-- (如 user_passwords, security_questions, bookings)。這樣當刪除使用者時，
+-- 其個資與訂單會一併徹底刪除，以符合 GDPR 規範與減少無效資料殘留。
+-- 但對於系統營運的基礎設施 (如車站、時刻表)，我們則使用 ON DELETE RESTRICT，
+-- 避免營運資料被意外刪除導致關聯訂單出錯。
+-- ============================================================
+
+-- ============================================================
 --  1. Auth & User Profile (Security Compliant + Loyalty Feature)
 -- ============================================================
 CREATE TABLE users (
@@ -52,7 +62,7 @@ CREATE TABLE user_passwords (
     user_id       VARCHAR(20) PRIMARY KEY REFERENCES users(user_id) ON DELETE CASCADE,
     password_hash VARCHAR(255) NOT NULL,
     salt          VARCHAR(255) NOT NULL,
-    updated_at    TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    updated_at    TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP
 );
 
 CREATE TABLE security_questions (
@@ -98,10 +108,10 @@ CREATE TABLE national_rail_schedules (
 -- ============================================================
 CREATE TABLE national_rail_bookings (
     booking_id             VARCHAR(20) PRIMARY KEY,
-    user_id                VARCHAR(20) REFERENCES users(user_id),
-    schedule_id            VARCHAR(20) REFERENCES national_rail_schedules(schedule_id),
-    origin_station_id      VARCHAR(10) REFERENCES national_rail_stations(station_id),
-    destination_station_id VARCHAR(10) REFERENCES national_rail_stations(station_id),
+    user_id                VARCHAR(20) REFERENCES users(user_id) ON DELETE CASCADE,
+    schedule_id            VARCHAR(20) REFERENCES national_rail_schedules(schedule_id) ON DELETE RESTRICT,
+    origin_station_id      VARCHAR(10) REFERENCES national_rail_stations(station_id) ON DELETE RESTRICT,
+    destination_station_id VARCHAR(10) REFERENCES national_rail_stations(station_id) ON DELETE RESTRICT,
     travel_date            DATE NOT NULL,
     fare_class             VARCHAR(20) NOT NULL,
     ticket_type            VARCHAR(20) NOT NULL DEFAULT 'single',
@@ -112,16 +122,16 @@ CREATE TABLE national_rail_bookings (
 
 CREATE TABLE national_rail_seat_layouts (
     layout_id   VARCHAR(20) PRIMARY KEY,
-    schedule_id VARCHAR(20) REFERENCES national_rail_schedules(schedule_id),
+    schedule_id VARCHAR(20) REFERENCES national_rail_schedules(schedule_id) ON DELETE CASCADE,
     coaches     JSONB NOT NULL
 );
 
 CREATE TABLE metro_travel_history (
     trip_id                VARCHAR(20) PRIMARY KEY,
-    user_id                VARCHAR(20) REFERENCES users(user_id),
-    schedule_id            VARCHAR(20) REFERENCES metro_schedules(schedule_id),
-    origin_station_id      VARCHAR(10) REFERENCES metro_stations(station_id),
-    destination_station_id VARCHAR(10) REFERENCES metro_stations(station_id),
+    user_id                VARCHAR(20) REFERENCES users(user_id) ON DELETE CASCADE,
+    schedule_id            VARCHAR(20) REFERENCES metro_schedules(schedule_id) ON DELETE RESTRICT,
+    origin_station_id      VARCHAR(10) REFERENCES metro_stations(station_id) ON DELETE RESTRICT,
+    destination_station_id VARCHAR(10) REFERENCES metro_stations(station_id) ON DELETE RESTRICT,
     travel_date            DATE NOT NULL,
     ticket_type            VARCHAR(20),
     stops_travelled        INT,
@@ -135,18 +145,18 @@ CREATE TABLE payments (
     amount_usd  NUMERIC(5,2) NOT NULL,
     method      VARCHAR(20),
     status      VARCHAR(20),
-    paid_at     TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    paid_at     TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP
 );
 
 CREATE EXTENSION IF NOT EXISTS vector;
 
 CREATE TABLE feedback (
-    feedback_id VARCHAR(20) PRIMARY KEY,
-    booking_id  VARCHAR(20) REFERENCES national_rail_bookings(booking_id),
-    user_id     VARCHAR(20) REFERENCES users(user_id),
+    feedback_id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+    booking_id  VARCHAR(20) REFERENCES national_rail_bookings(booking_id) ON DELETE CASCADE,
+    user_id     VARCHAR(20) REFERENCES users(user_id) ON DELETE CASCADE,
     rating      INT,
     comment     TEXT,
-    submitted_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    submitted_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP
 );
 
 -- ============================================================

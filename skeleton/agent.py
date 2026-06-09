@@ -1,3 +1,4 @@
+# TASK 6 EXTENSION: Added get_loyalty_points tool for End-to-End integration
 """
 TransitFlow — Intelligent Agent
 ================================
@@ -182,6 +183,16 @@ TOOLS = [
         "required": [],
     },
     {
+        "name": "get_loyalty_points",
+        "description": (
+            "Retrieve the logged-in user's total loyalty points. "
+            "Use whenever the user asks about their points, rewards, or loyalty balance. "
+            "Requires login — no parameters needed."
+        ),
+        "parameters": {},
+        "required": [],
+    },
+    {
         "name": "get_available_seats",
         "description": (
             "Show available seats on a national rail service for a given date and fare class. "
@@ -284,6 +295,7 @@ get_available_seats(schedule_id, travel_date, fare_class)
 make_booking(schedule_id, origin_station_id, destination_station_id, travel_date, fare_class, seat_id, ticket_type?)
 cancel_booking(booking_id)
 get_user_bookings()
+get_loyalty_points()
 search_policy(query)
 find_alternative_routes(origin_id, destination_id, avoid_station_id, network?)
 get_delay_ripple(station_id, hops?)"""
@@ -347,6 +359,14 @@ def _execute_tool(
             if not current_user_email:
                 return json.dumps({"error": "No user is currently logged in."})
             result = query_user_bookings(current_user_email)
+
+        elif tool_name == "get_loyalty_points":
+            if not current_user_email:
+                return json.dumps({"error": "No user is currently logged in."})
+            profile = query_user_profile(current_user_email)
+            if not profile:
+                return json.dumps({"error": "User profile not found."})
+            result = {"loyalty_points": profile["loyalty_points"]}
 
         elif tool_name == "get_available_seats":
             result = query_available_seats(**params)
@@ -556,6 +576,7 @@ def run_agent(
             f"\n\nLogged-in user: {user_display}. "
             "Answer personal booking queries for this user without asking for their email or ID. "
             "Use get_user_bookings() for any booking history request. "
+            "Use get_loyalty_points() for any loyalty point balance checks. "
             "Use make_booking / cancel_booking for booking and cancellation requests."
         )
     else:
@@ -580,6 +601,7 @@ Or if no tool needed: {{"tool_calls": []}}
 STATIONS: Metro=MS01-MS20, Rail=NR01-NR10
 USER: {current_user_email or "not logged in"}
 get_user_bookings: call (no params) when logged-in user asks about their bookings, tickets, or travel history.
+get_loyalty_points: call (no params) when logged-in user asks about their loyalty points, rewards, or balance.
 make_booking/cancel_booking: only if user is logged in.
 Route/path/journey questions: use find_route. Policy questions: use search_policy.
 Never use "" as a param value. Omit optional params if unknown.
@@ -612,6 +634,7 @@ JSON:"""
                 "You are a tool router. Call the right tool based on the user message. "
                 f"Logged-in user: {current_user_email or 'none'}. "
                 "My bookings/tickets/travel history → get_user_bookings (no params). "
+                "My loyalty points/rewards/balance → get_loyalty_points (no params). "
                 "Book a ticket / make a booking → check_national_rail_availability first, then make_booking. "
                 "Cancel a booking → cancel_booking. "
                 "Policy/rules/conduct/compensation/luggage/bicycle questions → search_policy. "
@@ -686,12 +709,17 @@ JSON:"""
                     _params["travel_date"] = _travel_date
                 _fallback(_tool, _params, "availability query")
 
-    # 3. Personal booking history — requires login
+    # 3. Personal booking history & loyalty points — requires login
     if current_user_email:
+        _point_triggers = {"my point", "my points", "loyalty point", "how many point", "reward point", "my balance"}
         _personal_triggers = {"my booking", "my ticket", "my trip", "my journey", "my history",
                                "my reservation", "show booking", "view booking", "check booking",
                                "list booking", "show my", "view my"}
-        if any(kw in _lower for kw in _personal_triggers):
+        
+        if any(kw in _lower for kw in _point_triggers):
+            if not _tool_selected("get_loyalty_points"):
+                _fallback("get_loyalty_points", {}, "loyalty points query")
+        elif any(kw in _lower for kw in _personal_triggers):
             if not _tool_selected("get_user_bookings"):
                 _fallback("get_user_bookings", {}, "personal booking query")
 
