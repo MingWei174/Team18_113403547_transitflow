@@ -1,6 +1,6 @@
 # Section 1 — Entity-Relationship Diagram
 
-![ER Diagram](./資料庫ER圖.png)
+![ER Diagram](https://raw.githubusercontent.com/MingWei174/IM2002-DBMGT-Train-final-group18/main/%E8%B3%87%E6%96%99%E5%BA%ABER%E5%9C%96.png)
 
 ---
 
@@ -245,12 +245,12 @@ WHERE user_id = %(user_id)s;
 > 
 > 1. **用 AliceTan 帳號登入測試訂票**
 > 
->    ![截圖一：與 Agent 的對話](./用AliceTan測試訂票.png)
+>    ![截圖一：與 Agent 的對話](https://raw.githubusercontent.com/MingWei174/IM2002-DBMGT-Train-final-group18/main/%E7%94%A8AliceTan%E6%B8%AC%E8%A9%A6%E8%A8%82%E7%A5%A8.png)
 > 
 > 2. **成功訂票並獲得 8 點會員點數**
 > 
->    ![截圖二：pgAdmin 確認 loyalty_points 點數增加](./成功訂票並獲得8點會員點數.png)
+>    ![截圖二：pgAdmin 確認 loyalty_points 點數增加](https://raw.githubusercontent.com/MingWei174/IM2002-DBMGT-Train-final-group18/main/%E6%88%90%E5%8A%9F%E8%A8%82%E7%A5%A8%E4%B8%A6%E7%8D%B2%E5%BE%978%E9%BB%9E%E6%9C%83%E5%93%A1%E9%BB%9E%E6%95%B8.png)
 > 
 > 3. **訂票成功的歷史訂票紀錄**
 > 
->    ![截圖三：UI 介面成功顯示 My History 歷史紀錄](./訂票成功的訂票紀錄.png)
+>    ![截圖三：UI 介面成功顯示 My History 歷史紀錄](https://raw.githubusercontent.com/MingWei174/IM2002-DBMGT-Train-final-group18/main/%E8%A8%82%E7%A5%A8%E6%88%90%E5%8A%9F%E7%9A%84%E8%A8%82%E7%A5%A8%E7%B4%80%E9%8C%84.png)
