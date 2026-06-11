@@ -19,13 +19,13 @@ try:
     # Drop transitflow database
     try:
         cur.execute('DROP DATABASE IF EXISTS transitflow')
-        print('✓ Dropped existing transitflow database')
+        print('[OK] Dropped existing transitflow database')
     except Exception as e:
         print(f'  Note: {e}')
     
     # Create transitflow database
     cur.execute('CREATE DATABASE transitflow')
-    print('✓ Created new transitflow database')
+    print('[OK] Created new transitflow database')
     
     cur.close()
     conn.close()
@@ -33,7 +33,7 @@ try:
     # Now connect to the new database and run schema
     conn = psycopg2.connect('host=localhost port=5433 user=transitflow password=transitflow dbname=transitflow')
     
-    print('✓ Connected to new database')
+    print('[OK] Connected to new database')
     
     with open('databases/relational/schema.sql', 'r', encoding='utf-8') as f:
         schema = f.read()
@@ -61,9 +61,9 @@ try:
     for i, stmt in enumerate(statements):
         try:
             cur.execute(stmt)
-            print(f'  ✓ {i+1}/{len(statements)}')
+            print(f'  [OK] {i+1}/{len(statements)}')
         except Exception as e:
-            print(f'  ✗ {i+1} ERROR: {str(e)[:100]}')
+            print(f'  [ERROR] {i+1} ERROR: {str(e)[:100]}')
     
     conn.commit()
     
@@ -71,7 +71,7 @@ try:
     cur = conn.cursor()
     cur.execute("SELECT table_name FROM information_schema.tables WHERE table_schema='public' ORDER BY table_name")
     tables = cur.fetchall()
-    print(f'\n✓ Schema created with {len(tables)} tables:')
+    print(f'\n[OK] Schema created with {len(tables)} tables:')
     for table in tables:
         print(f'  - {table[0]}')
     
@@ -85,5 +85,5 @@ try:
     
 except Exception as e:
     import traceback
-    print(f'✗ Error: {e}')
+    print(f'[ERROR] Error: {e}')
     traceback.print_exc()

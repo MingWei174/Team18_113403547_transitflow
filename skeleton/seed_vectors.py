@@ -1,4 +1,4 @@
-"""
+﻿"""
 TransitFlow — pgvector Policy Document Seeder
 Run once after starting Docker:
     python skeleton/seed_vectors.py
@@ -93,7 +93,7 @@ def _document_exists(title: str) -> bool:
 
 def seed():
     documents = build_documents()
-    print(f"📄 Embedding {len(documents)} policy documents using {llm.chat_provider}...\n")
+    print(f" Embedding {len(documents)} policy documents using {llm.chat_provider}...\n")
 
     for i, doc in enumerate(documents):
         if _document_exists(doc["title"]):
@@ -106,7 +106,7 @@ def seed():
             embedding = llm.embed(doc["content"])
 
             if len(embedding) != llm.embed_dim:
-                print(f"    ⚠️  Unexpected embedding dim: {len(embedding)} (expected {llm.embed_dim})")
+                print(f"    [WARN]  Unexpected embedding dim: {len(embedding)} (expected {llm.embed_dim})")
                 print(f"    Update GEMINI_EMBED_DIM or OLLAMA_EMBED_DIM in skeleton/config.py")
                 sys.exit(1)
 
@@ -117,16 +117,16 @@ def seed():
                 embedding=embedding,
                 source_file=doc.get("source_file", ""),
             )
-            print(f"    ✓ Stored as document id={doc_id}")
+            print(f"    [OK] Stored as document id={doc_id}")
 
         except Exception as e:
-            print(f"    ✗ Failed: {e}")
+            print(f"    [ERROR] Failed: {e}")
             raise
 
         if llm.chat_provider == "gemini" and i < len(documents) - 1:
             time.sleep(0.5)
 
-    print(f"\n✅ All {len(documents)} policy documents embedded and stored.")
+    print(f"\n[OK] All {len(documents)} policy documents embedded and stored.")
     print("   Test with a similarity search:")
     print("   >>> from skeleton.llm_provider import llm")
     print("   >>> from databases.relational.queries import query_policy_vector_search")

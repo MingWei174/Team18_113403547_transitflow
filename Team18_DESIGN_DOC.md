@@ -150,6 +150,15 @@
 - **Outcome (結果):** AI 協助我們修改了 `skeleton/agent.py`，新增了 `get_loyalty_points` 的 Tool 註冊，並實作了查詢 `query_user_profile` 的邏輯。同時更新了 System Prompt 與 Fallback 攔截機制。修改後，使用者已可以直接在對話框問「我現在有多少點數？」並由 Agent 回答，完美達成端到端整合。
 
 ---
+### 範例 8：修復 Windows 環境下 Vector 資料庫建置崩潰 (Unicode 編碼錯誤) - 張茗崴負責
+
+- **Context (情境):** 在執行 `reset_db.py` 與 `seed_vectors.py` 來建立與匯入 PostgreSQL pgvector 政策文件庫時，由於 Windows 預設終端機使用 CP950 編碼，遇到程式碼中的 Emoji (如 🌱、📄、✓、✗) 時會直接觸發 `UnicodeEncodeError` 崩潰，導致 `policy_documents` 表格建立失敗或無法匯入向量資料。
+
+- **Prompt (提示詞):** "幫我解決終端機無法下載的問題...這個問題也會一起解決嗎？" (透過截圖與 Log 給 AI 診斷為何 Agent 查詢報錯 relation "policy_documents" does not exist)
+
+- **Outcome (結果):** AI 成功追蹤出是 Windows 編碼造成的崩潰，導致匯入腳本提前中斷。我們請 AI 將 Python 腳本中的 Unicode Emojis 替換成標準的 ASCII 字串 (如 `[OK]`, `[ERROR]`)。修改後重新執行，順利解決了跨平台環境下的編碼衝突，成功建立了 Vector RAG 知識庫。
+
+---
 
 # Section 6 — Reflection & Trade-offs
 
