@@ -16,7 +16,7 @@ TransitFlow is a Python-based AI chat assistant for a fictional transit operator
 
 - **吳絃紘**：負責 Neo4j 圖形路網拓樸設計與 Cypher 查詢邏輯 (`graph/queries.py`)。負責跨網轉乘與路徑規劃。
 
-- **施紘宇**：負責資料匯入腳本 (`seed_postgres.py`, `seed_neo4j.py`)。負責實作【亮點 C：隱藏版政策查詢】，擴充 JSON 知識庫與 pgvector 整合。
+- **施紘宇**：負責資料匯入腳本 (`seed_postgres.py`, `seed_neo4j.py`)。負責實作【亮點 C：隱藏版政策查詢】，擴充 JSON 知識庫與 pgvector 整合。此外，協同完成 Task 6 Bonus 擴充，將「My History」歷史紀錄面板與常客點數（loyalty_points）系統整合進 UI / Agent / DB 的端到端流程，補充了 `skeleton/ui.py`、`skeleton/agent.py`、`databases/relational/queries.py` 與 Task 6 文件說明。
 
 ## Tech Stack
 - Language: Python 3.11+
@@ -245,6 +245,8 @@ Completed:
 - 完成 Task 6 加分項工作
   - 實作 `do_show_history(current_user_email)`，在 Gradio UI 中顯示使用者訂票歷史
   - 使用 `query_user_bookings(user_email)` 取得 `national_rail` 與 `metro` 旅程歷史
+  - 協同完成 Bonus 擴充：將「My History」歷史紀錄面板與常客點數（loyalty_points）系統整合進 UI / Agent / DB 的端到端流程
+  - 在 `skeleton/agent.py` 加入 `get_loyalty_points` Tool，支援聊天介面查詢點數餘額
   - 更新 `README.md`、`TASK6.md` 與相關說明文件，紀錄 Task 6 功能與使用方式
 - 保存當前本地進度
   - `skeleton/ensure_schema_snippet.py`
