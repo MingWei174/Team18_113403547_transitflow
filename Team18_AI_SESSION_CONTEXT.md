@@ -245,6 +245,7 @@ Completed:
 - 完成 Task 6 加分項工作
   - 實作 `do_show_history(current_user_email)`，在 Gradio UI 中顯示使用者訂票歷史
   - 使用 `query_user_bookings(user_email)` 取得 `national_rail` 與 `metro` 旅程歷史
+  - 已在 `train-mock-data/readme.md` 補充說明，並在 `train-mock-data/booking_rules.json`、`train-mock-data/refund_policy.json`、`train-mock-data/ticket_types.json`、`train-mock-data/travel_policies.json`、`train-mock-data/registered_users.json` 加入 `custom_note` 標記，以確認先前自訂擴充內容有註解可追溯
   - 協同完成 Bonus 擴充：將「My History」歷史紀錄面板與常客點數（loyalty_points）系統整合進 UI / Agent / DB 的端到端流程
   - 在 `skeleton/agent.py` 加入 `get_loyalty_points` Tool，支援聊天介面查詢點數餘額
   - 更新 `README.md`、`TASK6.md` 與相關說明文件，紀錄 Task 6 功能與使用方式
@@ -266,6 +267,7 @@ Validation:
 - 已成功推送到遠端 `origin/main`
 - 已確認 `netstat -ano` 顯示 `7860` 正在監聽，且 PID `11652` 為 Gradio 進程
 - 已驗證 `do_show_history` 及 `query_user_bookings` 可正確回傳歷史紀錄
+- 已確認這批註解標記存在於上述 mock-data 檔案中，且 JSON 檔可正常解析
 - 目前遠端 `main` 上包含你的提交：
   - `cc58fe4`：Merge current local changes into main
   - `eae41dd`：Save current ensure_schema_snippet.py
