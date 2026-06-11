@@ -45,9 +45,9 @@
 
 | Member | Estimated % | Brief justification |
 |--------|-----------|---------------------|
-| 張茗崴 | 34% | 主責關聯式資料庫 (PostgreSQL) 的 Schema 設計、複雜查詢與寫入 (Transaction)、資安 (bcrypt)、以及 Task 6 點數功能。 |
-| 吳絃紘 | 33% | 主責圖形資料庫 (Neo4j) 的設計與查詢，處理高難度的路網圖形遍歷與跨網轉乘 (Interchange) 查詢。 |
-| 施竑宇 | 33% | 主責向量資料庫 (Vector/RAG) 的設計、Gradio UI 的整合與測試、以及 Task 6 的 My History 面板功能確認。 |
+| 張茗崴 | 45% | 主責關聯式資料庫 (PostgreSQL) 的 Schema 設計、複雜查詢與寫入 (Transaction)、資安 (bcrypt)、以及 Task 6 點數功能。 |
+| 吳絃紘 | 20% | 主責圖形資料庫 (Neo4j) 的設計與查詢，處理高難度的路網圖形遍歷與跨網轉乘 (Interchange) 查詢。 |
+| 施竑宇 | 35% | 主責向量資料庫 (Vector/RAG) 的設計、Gradio UI 的整合與測試、以及 Task 6 的 My History 面板功能確認。 |
 | **Total** | **100%** | |
 
 ---
