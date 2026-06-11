@@ -86,13 +86,19 @@ CREATE TABLE national_rail_stations (
 );
 
 -- ============================================================
---  3. Schedules (Using JSONB for stops for easier array querying)
+--  3. Schedules & Stops (Fully Normalized)
 -- ============================================================
 CREATE TABLE metro_schedules (
     schedule_id VARCHAR(20) PRIMARY KEY,
     line        VARCHAR(5) NOT NULL,
-    direction   VARCHAR(10),
-    stops       JSONB NOT NULL -- e.g., [{"station_id": "MS01", "arrival_time": "08:00"}]
+    direction   VARCHAR(10)
+);
+
+CREATE TABLE metro_schedule_stops (
+    schedule_id VARCHAR(20) REFERENCES metro_schedules(schedule_id) ON DELETE CASCADE,
+    station_id  VARCHAR(10) REFERENCES metro_stations(station_id) ON DELETE RESTRICT,
+    stop_order  INT NOT NULL,
+    PRIMARY KEY (schedule_id, station_id)
 );
 
 CREATE TABLE national_rail_schedules (
@@ -100,7 +106,14 @@ CREATE TABLE national_rail_schedules (
     route_name       TEXT,
     base_fare_usd    NUMERIC(5,2),
     per_stop_rate_usd NUMERIC(5,2),
-    stops            JSONB NOT NULL 
+    service_type     VARCHAR(20)
+);
+
+CREATE TABLE national_rail_schedule_stops (
+    schedule_id VARCHAR(20) REFERENCES national_rail_schedules(schedule_id) ON DELETE CASCADE,
+    station_id  VARCHAR(10) REFERENCES national_rail_stations(station_id) ON DELETE RESTRICT,
+    stop_order  INT NOT NULL,
+    PRIMARY KEY (schedule_id, station_id)
 );
 
 -- ============================================================

@@ -87,11 +87,30 @@ def query_national_rail_availability(
     """
     with _connect() as conn:
         with conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor) as cur:
-            cur.execute("SELECT * FROM national_rail_schedules")
-            all_schedules = cur.fetchall()
+            cur.execute("""
+                SELECT s.schedule_id, s.route_name, s.base_fare_usd, s.per_stop_rate_usd, s.service_type,
+                       (
+                           SELECT json_agg(ns.station_id)
+                           FROM (
+                               SELECT station_id 
+                               FROM national_rail_schedule_stops 
+                               WHERE schedule_id = s.schedule_id 
+                               ORDER BY stop_order
+                           ) ns
+                       ) as stops_in_order
+                FROM national_rail_schedules s
+            """)
+            schedules = cur.fetchall()
+            
+            # Reconstruct the expected 'stops' JSON structure
+            for row in schedules:
+                row["stops"] = {
+                    "service_type": row["service_type"],
+                    "stops_in_order": row["stops_in_order"] or []
+                }
             
             results = []
-            for row in all_schedules:
+            for row in schedules:
                 sch = row["stops"]
                 station_ids = sch.get("stops_in_order", [])
                 
@@ -170,11 +189,29 @@ def query_metro_schedules(origin_id: str, destination_id: str) -> list[dict]:
     """
     with _connect() as conn:
         with conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor) as cur:
-            cur.execute("SELECT * FROM metro_schedules")
-            all_schedules = cur.fetchall()
+            cur.execute("""
+                SELECT s.schedule_id, s.line, s.direction, 
+                       (
+                           SELECT json_agg(ms.station_id)
+                           FROM (
+                               SELECT station_id 
+                               FROM metro_schedule_stops 
+                               WHERE schedule_id = s.schedule_id 
+                               ORDER BY stop_order
+                           ) ms
+                       ) as stops_in_order
+                FROM metro_schedules s
+            """)
+            schedules = cur.fetchall()
+            
+            # Reconstruct the expected 'stops' JSON structure
+            for row in schedules:
+                row["stops"] = {
+                    "stops_in_order": row["stops_in_order"] or []
+                }
             
             results = []
-            for row in all_schedules:
+            for row in schedules:
                 sch = row["stops"]
                 station_ids = sch.get("stops_in_order", [])
                 
@@ -368,14 +405,25 @@ def execute_booking(
                 return False, f"Seat {seat_id} is not available."
                 
         with conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor) as cur:
-            cur.execute("SELECT base_fare_usd, per_stop_rate_usd, stops FROM national_rail_schedules WHERE schedule_id = %s", (schedule_id,))
+            cur.execute("""
+                SELECT s.base_fare_usd, s.per_stop_rate_usd, s.service_type,
+                       (
+                           SELECT json_agg(ns.station_id)
+                           FROM (
+                               SELECT station_id 
+                               FROM national_rail_schedule_stops 
+                               WHERE schedule_id = s.schedule_id 
+                               ORDER BY stop_order
+                           ) ns
+                       ) as stops_in_order
+                FROM national_rail_schedules s 
+                WHERE s.schedule_id = %s
+            """, (schedule_id,))
             schedule = cur.fetchone()
             if not schedule:
-                return False, "Schedule not found."
+                return (False, "Schedule not found")
             
-            base_fare = float(schedule["base_fare_usd"] or 50.00)
-            per_stop = float(schedule["per_stop_rate_usd"] or 10.00)
-            stops_in_order = schedule["stops"].get("stops_in_order", [])
+            stops_in_order = schedule["stops_in_order"] or []
             
             if origin_station_id not in stops_in_order or destination_station_id not in stops_in_order:
                 return False, "Invalid origin or destination station for this schedule."
@@ -386,6 +434,8 @@ def execute_booking(
                 return False, "Invalid origin and destination order."
                 
             stops_travelled = dest_idx - orig_idx
+            base_fare = float(schedule["base_fare_usd"] or 50.00)
+            per_stop = float(schedule["per_stop_rate_usd"] or 10.00)
             amount_usd = base_fare + (stops_travelled * per_stop)
             if fare_class.lower() == "first":
                 amount_usd *= 2
@@ -451,9 +501,9 @@ def execute_cancellation(booking_id: str, user_id: str) -> tuple[bool, dict | st
             if booking["status"] in ("cancelled", "refunded"):
                 return False, "Booking is already cancelled."
                 
-            cur.execute("SELECT stops FROM national_rail_schedules WHERE schedule_id = %s", (booking["schedule_id"],))
+            cur.execute("SELECT service_type FROM national_rail_schedules WHERE schedule_id = %s", (booking["schedule_id"],))
             sch_row = cur.fetchone()
-            service_type = sch_row["stops"].get("service_type", "normal") if sch_row else "normal"
+            service_type = sch_row["service_type"] if sch_row else "normal"
             
             days_before = (booking["travel_date"] - datetime.now(timezone.utc).date()).days
             

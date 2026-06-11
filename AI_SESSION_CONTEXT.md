@@ -12,7 +12,7 @@ Whoever makes a schema change or architectural decision updates this file in the
 TransitFlow is a Python-based AI chat assistant for a fictional transit operator. It queries three databases — PostgreSQL (relational + vector), Neo4j (graph) — and uses an LLM to answer user questions. Our task as students is to design the database schema and implement the query functions in `databases/relational/queries.py` and `databases/graph/queries.py`.
 
 ## 團隊分工與專題亮點
-- **張茗崴**：負責 PostgreSQL 關聯資料庫 Schema 設計與查詢邏輯 (`relational/queries.py`)。負責實作【亮點 A：常客點數 Loyalty Points】的資料庫狀態更新。
+- **張茗崴**：負責 PostgreSQL 關聯資料庫 Schema 設計與查詢邏輯 (`relational/queries.py`)。負責實作【亮點 A：常客點數 Loyalty Points】的資料庫狀態更新，並成功克服「JSONB Array vs 中介表」地雷，透過 `json_agg` 與 Junction Tables 達成嚴格的 1NF/3NF 正規化。
 
 - **吳絃紘**：負責 Neo4j 圖形路網拓樸設計與 Cypher 查詢邏輯 (`graph/queries.py`)。負責跨網轉乘與路徑規劃。
 

@@ -73,8 +73,14 @@ def ensure_schema(cur):
     CREATE TABLE IF NOT EXISTS metro_schedules (
         schedule_id VARCHAR(20) PRIMARY KEY,
         line VARCHAR(5) NOT NULL,
-        direction VARCHAR(10),
-        stops JSONB NOT NULL
+        direction VARCHAR(10)
+    );
+
+    CREATE TABLE IF NOT EXISTS metro_schedule_stops (
+        schedule_id VARCHAR(20),
+        station_id VARCHAR(10),
+        stop_order INT NOT NULL,
+        PRIMARY KEY (schedule_id, station_id)
     );
 
     CREATE TABLE IF NOT EXISTS national_rail_schedules (
@@ -82,7 +88,14 @@ def ensure_schema(cur):
         route_name TEXT,
         base_fare_usd NUMERIC(5,2),
         per_stop_rate_usd NUMERIC(5,2),
-        stops JSONB NOT NULL
+        service_type VARCHAR(20)
+    );
+
+    CREATE TABLE IF NOT EXISTS national_rail_schedule_stops (
+        schedule_id VARCHAR(20),
+        station_id VARCHAR(10),
+        stop_order INT NOT NULL,
+        PRIMARY KEY (schedule_id, station_id)
     );
 
     CREATE TABLE IF NOT EXISTS national_rail_seat_layouts (
@@ -178,33 +191,45 @@ def seed_national_rail_stations(cur):
 
 def seed_metro_schedules(cur):
     data = load("metro_schedules.json")
-    rows = []
+    sch_rows = []
+    stop_rows = []
     for sch in data:
         schedule_id = sch.get("schedule_id")
         line = sch.get("line")
         direction = sch.get("direction")
-        # store the rest of schedule as JSON in `stops` JSONB column
-        stops = Json(sch)
-        rows.append((schedule_id, line, direction, stops))
-    inserted = insert_many(cur, "metro_schedules", ["schedule_id", "line", "direction", "stops"], rows)
-    print(f"Inserted metro_schedules: {inserted}")
+        sch_rows.append((schedule_id, line, direction))
+        
+        stops_in_order = sch.get("stops_in_order", [])
+        for i, station_id in enumerate(stops_in_order):
+            stop_rows.append((schedule_id, station_id, i))
+            
+    inserted_sch = insert_many(cur, "metro_schedules", ["schedule_id", "line", "direction"], sch_rows)
+    inserted_stops = insert_many(cur, "metro_schedule_stops", ["schedule_id", "station_id", "stop_order"], stop_rows)
+    print(f"Inserted metro_schedules: {inserted_sch}, metro_schedule_stops: {inserted_stops}")
 
 
 def seed_national_rail_schedules(cur):
     data = load("national_rail_schedules.json")
-    rows = []
+    sch_rows = []
+    stop_rows = []
     for sch in data:
         schedule_id = sch.get("schedule_id")
         route_name = f"{sch.get('line')} {sch.get('direction', '')}".strip()
-        # pick standard fares as base values
         fare_classes = sch.get("fare_classes", {})
         standard = fare_classes.get("standard", {})
         base_fare = standard.get("base_fare_usd")
         per_stop = standard.get("per_stop_rate_usd")
-        stops = Json(sch)
-        rows.append((schedule_id, route_name, base_fare, per_stop, stops))
-    inserted = insert_many(cur, "national_rail_schedules", ["schedule_id", "route_name", "base_fare_usd", "per_stop_rate_usd", "stops"], rows)
-    print(f"Inserted national_rail_schedules: {inserted}")
+        
+        service_type = sch.get("service_type")
+        sch_rows.append((schedule_id, route_name, base_fare, per_stop, service_type))
+        
+        stops_in_order = sch.get("stops_in_order", [])
+        for i, station_id in enumerate(stops_in_order):
+            stop_rows.append((schedule_id, station_id, i))
+            
+    inserted_sch = insert_many(cur, "national_rail_schedules", ["schedule_id", "route_name", "base_fare_usd", "per_stop_rate_usd", "service_type"], sch_rows)
+    inserted_stops = insert_many(cur, "national_rail_schedule_stops", ["schedule_id", "station_id", "stop_order"], stop_rows)
+    print(f"Inserted national_rail_schedules: {inserted_sch}, national_rail_schedule_stops: {inserted_stops}")
 
 
 def seed_seat_layouts(cur):
