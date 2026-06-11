@@ -1,4 +1,4 @@
-[
+﻿[
   {
     "user_id": "RU01",
     "full_name": "Alice Tan",
@@ -9,7 +9,8 @@
     "secret_question": "What was the name of your first pet?",
     "secret_answer": "Biscuit",
     "registered_at": "2023-01-10T09:00:00Z",
-    "is_active": true
+    "is_active": true,
+    "custom_note": "Custom user-data note added for the later password-hash update."
   },
   {
     "user_id": "RU02",
@@ -21,7 +22,8 @@
     "secret_question": "What is your mother's maiden name?",
     "secret_answer": "Chong",
     "registered_at": "2023-02-05T10:30:00Z",
-    "is_active": true
+    "is_active": true,
+    "custom_note": "Custom user-data note added for the later password-hash update."
   },
   {
     "user_id": "RU03",
@@ -33,7 +35,8 @@
     "secret_question": "What was the name of the street you grew up on?",
     "secret_answer": "Maple Avenue",
     "registered_at": "2023-03-18T14:15:00Z",
-    "is_active": true
+    "is_active": true,
+    "custom_note": "Custom user-data note added for the later password-hash update."
   },
   {
     "user_id": "RU04",
@@ -45,7 +48,8 @@
     "secret_question": "What was the make of your first car?",
     "secret_answer": "Toyota",
     "registered_at": "2023-04-02T08:45:00Z",
-    "is_active": true
+    "is_active": true,
+    "custom_note": "Custom user-data note added for the later password-hash update."
   },
   {
     "user_id": "RU05",
@@ -57,7 +61,8 @@
     "secret_question": "What primary school did you attend?",
     "secret_answer": "Riverside Primary",
     "registered_at": "2023-05-20T16:00:00Z",
-    "is_active": false
+    "is_active": false,
+    "custom_note": "Custom user-data note added for the later password-hash update."
   },
   {
     "user_id": "RU06",
@@ -69,7 +74,8 @@
     "secret_question": "What was the name of your childhood best friend?",
     "secret_answer": "Aziz",
     "registered_at": "2023-06-11T11:20:00Z",
-    "is_active": true
+    "is_active": true,
+    "custom_note": "Custom user-data note added for the later password-hash update."
   },
   {
     "user_id": "RU07",
@@ -81,7 +87,8 @@
     "secret_question": "In what city were you born?",
     "secret_answer": "Penang",
     "registered_at": "2023-07-08T09:50:00Z",
-    "is_active": true
+    "is_active": true,
+    "custom_note": "Custom user-data note added for the later password-hash update."
   },
   {
     "user_id": "RU08",
@@ -93,7 +100,8 @@
     "secret_question": "What was the name of your first pet?",
     "secret_answer": "Goldie",
     "registered_at": "2023-08-14T13:00:00Z",
-    "is_active": true
+    "is_active": true,
+    "custom_note": "Custom user-data note added for the later password-hash update."
   },
   {
     "user_id": "RU09",
@@ -105,7 +113,8 @@
     "secret_question": "What is your mother's maiden name?",
     "secret_answer": "Lim",
     "registered_at": "2023-09-01T17:30:00Z",
-    "is_active": true
+    "is_active": true,
+    "custom_note": "Custom user-data note added for the later password-hash update."
   },
   {
     "user_id": "RU10",
@@ -117,7 +126,8 @@
     "secret_question": "What was the name of the street you grew up on?",
     "secret_answer": "Orchid Road",
     "registered_at": "2023-10-22T08:00:00Z",
-    "is_active": true
+    "is_active": true,
+    "custom_note": "Custom user-data note added for the later password-hash update."
   },
   {
     "user_id": "RU11",
@@ -129,7 +139,8 @@
     "secret_question": "What was the make of your first car?",
     "secret_answer": "Honda",
     "registered_at": "2023-11-05T10:10:00Z",
-    "is_active": true
+    "is_active": true,
+    "custom_note": "Custom user-data note added for the later password-hash update."
   },
   {
     "user_id": "RU12",
@@ -141,7 +152,8 @@
     "secret_question": "What primary school did you attend?",
     "secret_answer": "Hillside Primary",
     "registered_at": "2023-12-01T12:45:00Z",
-    "is_active": false
+    "is_active": false,
+    "custom_note": "Custom user-data note added for the later password-hash update."
   },
   {
     "user_id": "RU13",
@@ -153,7 +165,8 @@
     "secret_question": "What was the name of your childhood best friend?",
     "secret_answer": "Siu Fang",
     "registered_at": "2024-01-09T09:25:00Z",
-    "is_active": true
+    "is_active": true,
+    "custom_note": "Custom user-data note added for the later password-hash update."
   },
   {
     "user_id": "RU14",
@@ -165,7 +178,8 @@
     "secret_question": "In what city were you born?",
     "secret_answer": "Chennai",
     "registered_at": "2024-02-14T15:00:00Z",
-    "is_active": true
+    "is_active": true,
+    "custom_note": "Custom user-data note added for the later password-hash update."
   },
   {
     "user_id": "RU15",
@@ -177,7 +191,8 @@
     "secret_question": "What was the name of your first pet?",
     "secret_answer": "Snowball",
     "registered_at": "2024-03-20T11:00:00Z",
-    "is_active": true
+    "is_active": true,
+    "custom_note": "Custom user-data note added for the later password-hash update."
   },
   {
     "user_id": "RU16",
@@ -189,7 +204,8 @@
     "secret_question": "What is your mother's maiden name?",
     "secret_answer": "Tan",
     "registered_at": "2024-04-03T08:30:00Z",
-    "is_active": true
+    "is_active": true,
+    "custom_note": "Custom user-data note added for the later password-hash update."
   },
   {
     "user_id": "RU17",
@@ -201,7 +217,8 @@
     "secret_question": "What was the name of the street you grew up on?",
     "secret_answer": "Sunset Drive",
     "registered_at": "2024-05-12T14:20:00Z",
-    "is_active": true
+    "is_active": true,
+    "custom_note": "Custom user-data note added for the later password-hash update."
   },
   {
     "user_id": "RU18",
@@ -213,7 +230,8 @@
     "secret_question": "What was the make of your first car?",
     "secret_answer": "Nissan",
     "registered_at": "2024-06-25T10:00:00Z",
-    "is_active": true
+    "is_active": true,
+    "custom_note": "Custom user-data note added for the later password-hash update."
   },
   {
     "user_id": "RU19",
@@ -225,7 +243,8 @@
     "secret_question": "What primary school did you attend?",
     "secret_answer": "Lakeside Primary",
     "registered_at": "2024-07-30T16:45:00Z",
-    "is_active": true
+    "is_active": true,
+    "custom_note": "Custom user-data note added for the later password-hash update."
   },
   {
     "user_id": "RU20",
@@ -237,6 +256,7 @@
     "secret_question": "In what city were you born?",
     "secret_answer": "Hong Kong",
     "registered_at": "2024-08-18T09:15:00Z",
-    "is_active": true
+    "is_active": true,
+    "custom_note": "Custom user-data note added for the later password-hash update."
   }
 ]

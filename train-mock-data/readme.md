@@ -36,3 +36,13 @@ This dataset models a fictional public transit system comprising two networks: a
 | `refund_policy.json` | Refund eligibility by network, ticket type, and cancellation window |
 | `booking_rules.json` | Booking and modification rules |
 | `travel_policies.json` | Passenger conduct and luggage policies |
+
+## Custom additions already annotated from prior commits
+
+The following notes summarize the user-added mock-data extensions that were introduced in earlier commits, so the dataset stays readable without changing the original JSON structure:
+
+- `booking_rules.json`: adds refund-processing timing, change-confirmation messaging, and extra service-cancellation / fare-adjustment guidance for both rail and metro flows.
+- `refund_policy.json`: adds extra refund-method and exception notes, plus the new RF006 and RF007 policy rules for duplicate bookings and missed-connection compensation.
+- `ticket_types.json`: adds cancellation instructions, transferability notes, refund notes, return-extension rules, activation guidance, and exceptional-refund notes for ticket types.
+- `travel_policies.json`: adds accessibility guidance and updated travel-policy metadata for metro and national rail.
+- `registered_users.json`: the password fields were updated to bcrypt hashes in the later user-data commit, which is why the demo account records now store secure password values instead of plain text.

@@ -10,28 +10,36 @@
     "seat_selection": {
       "first_class": {
         "included": true,
-        "fee_usd": 0.00,
+        "fee_usd": 0.0,
         "description": "Seat selection is included at no extra charge for all first class bookings."
       },
       "standard_class": {
         "included": false,
-        "fee_usd": 0.50,
+        "fee_usd": 0.5,
         "description": "Seat selection is optional for standard class. Passengers who do not select a seat will be assigned one at check-in, subject to availability.",
         "notes": "Window and aisle seats are subject to availability at the time of booking."
       }
     },
     "ticket_changes": {
       "allowed": true,
-      "change_fee_usd": 1.00,
+      "change_fee_usd": 1.0,
       "deadline": "Changes must be requested at least 24 hours before the scheduled departure of the service being changed.",
-      "what_can_be_changed": ["Travel date", "Scheduled service (same route)", "Seat selection"],
-      "what_cannot_be_changed": ["Route (origin/destination)", "Fare class (standard to first or vice versa)", "Ticket type (single to return or vice versa)"],
+      "what_can_be_changed": [
+        "Travel date",
+        "Scheduled service (same route)",
+        "Seat selection"
+      ],
+      "what_cannot_be_changed": [
+        "Route (origin/destination)",
+        "Fare class (standard to first or vice versa)",
+        "Ticket type (single to return or vice versa)"
+      ],
       "how_to_change": "Changes can be made via the app, website, or at a staffed ticket counter.",
       "express_service_note": "Ticket changes are not permitted for express service bookings within 24 hours of departure."
     },
     "child_fares": {
       "under_5": {
-        "fare_usd": 0.00,
+        "fare_usd": 0.0,
         "condition": "Children under 5 years of age travel free when accompanied by a fare-paying adult. No ticket required."
       },
       "age_5_to_15": {
@@ -51,7 +59,11 @@
       "not_applicable": "Group discount does not apply to first class tickets, express services, or day passes."
     },
     "payment": {
-      "accepted_methods": ["credit_card", "debit_card", "ewallet"],
+      "accepted_methods": [
+        "credit_card",
+        "debit_card",
+        "ewallet"
+      ],
       "payment_timing": "Full payment is required at the time of booking.",
       "currency": "USD",
       "refund_processing_time": "Refunds typically appear within 7 business days."
@@ -83,7 +95,7 @@
     },
     "child_fares": {
       "under_5": {
-        "fare_usd": 0.00,
+        "fare_usd": 0.0,
         "condition": "Children under 5 years of age travel free when accompanied by a fare-paying adult. No ticket required."
       },
       "age_5_to_15": {
@@ -100,7 +112,11 @@
       "description": "Group discounts are not available on metro services."
     },
     "payment": {
-      "accepted_methods": ["credit_card", "debit_card", "ewallet"],
+      "accepted_methods": [
+        "credit_card",
+        "debit_card",
+        "ewallet"
+      ],
       "payment_timing": "Full payment is required at the time of purchase.",
       "currency": "USD"
     },
@@ -121,5 +137,6 @@
     "lost_tickets": "Digital tickets can be retrieved via the app at any time using the booking reference. Passengers are advised to screenshot their QR code before travel in case of connectivity issues.",
     "customer_service": "Passengers with queries or complaints may contact customer service via the in-app chat, email, or station help desks. Response time is within 2 business days.",
     "dispute_resolution": "If a passenger disagrees with a refund decision, they may escalate the case to the customer service team within 14 days of the original decision."
-  }
+  },
+  "custom_note": "Custom booking-rule note added for the earlier mock-data extension."
 }
