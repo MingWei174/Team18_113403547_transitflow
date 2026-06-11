@@ -164,6 +164,12 @@ CREATE TABLE payments (
 CREATE EXTENSION IF NOT EXISTS vector;
 
 CREATE TABLE feedback (
+    -- [WHY PK] 為什麼這裡的主鍵選擇使用 UUID？
+    -- 在這個專案中，大部分的外部種子資料 (mock data) 都是給定 VARCHAR 格式 (例如 "user_id": "U001")，
+    -- 因此為了相容性，我們先前在 users 與 schedules 等表使用了 VARCHAR。
+    -- 但針對這個系統內部獨立生成的 `feedback` (回饋) 表格，我們不需要依賴舊有的字串格式，
+    -- 所以採用 `UUID`。UUID 具備全域唯一性 (Globally Unique)，比起 VARCHAR 更能避免碰撞風險，
+    -- 且比起 SERIAL 可以避免被猜測出系統總共收到多少回饋，提供更好的隱私保護。
     feedback_id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
     booking_id  VARCHAR(20) REFERENCES national_rail_bookings(booking_id) ON DELETE CASCADE,
     user_id     VARCHAR(20) REFERENCES users(user_id) ON DELETE CASCADE,
